@@ -1,0 +1,550 @@
+<meta charset="UTF-8">
+<title>Réconciliation QS/Ysmael</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+
+  :root{
+    color-scheme: light;
+    --surface-1:#fcfcfb; --page-plane:#f9f9f7; --surface-raised:#ffffff;
+    --text-primary:#0b0b0b; --text-secondary:#52514e; --text-muted:#898781;
+    --border: rgba(11,11,11,0.10); --border-strong: rgba(11,11,11,0.16);
+    --gridline:#e1e0d9; --baseline:#c3c2b7;
+    --qs:#2a78d6; --ysmael:#eb6834; --organic:#1baf7a; --bundle:#eda100;
+    --good:#0ca30c; --good-bg: rgba(12,163,12,0.12);
+    --critical:#d03b3b; --critical-bg: rgba(208,59,59,0.10);
+    --qs-bg: rgba(42,120,214,0.10); --ysmael-bg: rgba(235,104,52,0.12);
+    --shadow: 0 1px 2px rgba(11,11,11,0.06), 0 8px 24px -12px rgba(11,11,11,0.16);
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      color-scheme: dark;
+      --surface-1:#1a1a19; --page-plane:#0d0d0d; --surface-raised:#232322;
+      --text-primary:#ffffff; --text-secondary:#c3c2b7; --text-muted:#898781;
+      --border: rgba(255,255,255,0.10); --border-strong: rgba(255,255,255,0.16);
+      --gridline:#2c2c2a; --baseline:#383835;
+      --qs:#3987e5; --ysmael:#d95926; --organic:#199e70; --bundle:#c98500;
+      --good:#0ca30c; --good-bg: rgba(12,163,12,0.18);
+      --critical:#e66767; --critical-bg: rgba(230,103,103,0.16);
+      --qs-bg: rgba(57,135,229,0.16); --ysmael-bg: rgba(217,89,38,0.18);
+      --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 8px 24px -12px rgba(0,0,0,0.5);
+    }
+  }
+  :root[data-theme="dark"]{
+    color-scheme: dark;
+    --surface-1:#1a1a19; --page-plane:#0d0d0d; --surface-raised:#232322;
+    --text-primary:#ffffff; --text-secondary:#c3c2b7; --text-muted:#898781;
+    --border: rgba(255,255,255,0.10); --border-strong: rgba(255,255,255,0.16);
+    --gridline:#2c2c2a; --baseline:#383835;
+    --qs:#3987e5; --ysmael:#d95926; --organic:#199e70; --bundle:#c98500;
+    --good:#0ca30c; --good-bg: rgba(12,163,12,0.18);
+    --critical:#e66767; --critical-bg: rgba(230,103,103,0.16);
+    --qs-bg: rgba(57,135,229,0.16); --ysmael-bg: rgba(217,89,38,0.18);
+    --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 8px 24px -12px rgba(0,0,0,0.5);
+  }
+
+  *{box-sizing:border-box;}
+  body{
+    margin:0; background:var(--page-plane); color:var(--text-primary);
+    font-family:"IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  .mono{ font-family:"IBM Plex Mono", ui-monospace, monospace; font-variant-numeric: tabular-nums; }
+
+  .wrap{ max-width:1180px; margin:0 auto; padding: 28px 20px 80px; }
+
+  header.top{
+    display:flex; flex-wrap:wrap; gap:14px; align-items:flex-end; justify-content:space-between;
+    margin-bottom:22px;
+  }
+  h1{ font-size:1.5rem; font-weight:700; margin:0 0 4px; text-wrap:balance; letter-spacing:-0.01em;}
+  .subtitle{ color:var(--text-secondary); font-size:0.92rem; margin:0; max-width:60ch; }
+  .badge-row{ display:flex; gap:8px; flex-wrap:wrap; }
+  .src-badge{
+    display:inline-flex; align-items:center; gap:6px; font-size:0.76rem; font-weight:600;
+    padding:4px 10px; border-radius:100px; border:1px solid var(--border-strong);
+    background:var(--surface-raised); color:var(--text-secondary);
+  }
+  .src-dot{ width:8px; height:8px; border-radius:50%; }
+
+  /* filter bar */
+  .filterbar{
+    position:sticky; top:0; z-index:20; background:var(--page-plane);
+    padding:10px 0 14px; margin-bottom:18px;
+    display:flex; flex-wrap:wrap; gap:10px; align-items:center;
+    border-bottom:1px solid var(--border);
+  }
+  .filter-group{ display:flex; align-items:center; gap:8px; }
+  .filter-label{ font-size:0.72rem; text-transform:uppercase; letter-spacing:0.06em; color:var(--text-muted); font-weight:600; }
+  .seg{ display:inline-flex; background:var(--surface-raised); border:1px solid var(--border-strong); border-radius:10px; padding:2px; }
+  .seg button{
+    border:none; background:transparent; color:var(--text-secondary); font:inherit; font-size:0.82rem; font-weight:500;
+    padding:6px 12px; border-radius:8px; cursor:pointer; transition:background .15s, color .15s;
+  }
+  .seg button.active{ background:var(--text-primary); color:var(--surface-1); font-weight:600; }
+  .seg button:focus-visible, select:focus-visible, .chip:focus-visible{ outline:2px solid var(--qs); outline-offset:2px; }
+  select#metricSel{
+    font:inherit; font-size:0.82rem; font-weight:500; color:var(--text-primary);
+    background:var(--surface-raised); border:1px solid var(--border-strong); border-radius:10px;
+    padding:7px 10px; cursor:pointer;
+  }
+
+  /* KPI grid */
+  .kpi-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:22px; }
+  .kpi{
+    background:var(--surface-raised); border:1px solid var(--border); border-radius:14px;
+    padding:16px 16px 14px; box-shadow:var(--shadow);
+  }
+  .kpi-label{ font-size:0.76rem; color:var(--text-secondary); margin:0 0 8px; line-height:1.3; min-height:2.4em; }
+  .kpi-value{ font-size:1.9rem; font-weight:700; letter-spacing:-0.01em; }
+  .kpi-value.good{ color:var(--good); }
+  .kpi-value.critical{ color:var(--critical); }
+  .kpi-sub{ font-size:0.72rem; color:var(--text-muted); margin-top:4px; }
+
+  /* panels */
+  .panel{
+    background:var(--surface-raised); border:1px solid var(--border); border-radius:14px;
+    padding:18px 18px 14px; box-shadow:var(--shadow); margin-bottom:18px;
+  }
+  .panel h2{ font-size:0.98rem; font-weight:700; margin:0 0 2px; }
+  .panel .panel-sub{ font-size:0.78rem; color:var(--text-muted); margin:0 0 14px; }
+  .chart-grid{ display:grid; grid-template-columns: 1.4fr 1fr; gap:16px; align-items:stretch; }
+  @media (max-width: 860px){ .chart-grid{ grid-template-columns:1fr; } .kpi-grid{ grid-template-columns:repeat(2,1fr); } }
+
+  .legend{ display:flex; gap:14px; flex-wrap:wrap; margin-bottom:6px; }
+  .legend-item{ display:flex; align-items:center; gap:6px; font-size:0.78rem; color:var(--text-secondary); }
+  .legend-swatch{ width:10px; height:10px; border-radius:3px; }
+
+  svg.chart{ width:100%; height:auto; overflow:visible; }
+  .gridline{ stroke:var(--gridline); stroke-width:1; }
+  .axislabel{ fill:var(--text-muted); font-size:9.5px; font-family:"IBM Plex Mono", monospace; }
+  .barlabel{ fill:var(--text-secondary); font-size:9.5px; font-weight:600; font-family:"IBM Plex Mono", monospace; }
+  .catlabel{ fill:var(--text-secondary); font-size:9.5px; font-weight:500; }
+
+  .crosshair{ stroke:var(--text-muted); stroke-width:1; stroke-dasharray:3 3; pointer-events:none; opacity:0; }
+  .hoverdot{ opacity:0; pointer-events:none; }
+  .hitband{ fill:transparent; }
+
+  .tooltip{
+    position:absolute; pointer-events:none; background:var(--surface-raised); border:1px solid var(--border-strong);
+    border-radius:10px; padding:8px 10px; font-size:0.76rem; box-shadow:var(--shadow); opacity:0; transition:opacity .1s;
+    z-index:30; min-width:150px;
+  }
+  .tooltip .t-date{ font-weight:700; margin-bottom:5px; }
+  .tooltip .t-row{ display:flex; justify-content:space-between; gap:14px; padding:1px 0; }
+  .tooltip .t-row .t-name{ color:var(--text-secondary); display:flex; align-items:center; gap:5px;}
+  .tooltip .t-dot{ width:7px; height:7px; border-radius:50%; display:inline-block; }
+  .tooltip .t-val{ font-family:"IBM Plex Mono", monospace; font-weight:600; }
+
+  /* table */
+  .table-scroll{ overflow-x:auto; }
+  table.data{ width:100%; border-collapse:collapse; font-size:0.82rem; }
+  table.data th{
+    position:sticky; top:0; background:var(--surface-raised); text-align:left; font-size:0.7rem;
+    text-transform:uppercase; letter-spacing:0.05em; color:var(--text-muted); font-weight:600;
+    padding:8px 10px; border-bottom:1px solid var(--border-strong); white-space:nowrap;
+  }
+  table.data td{ padding:7px 10px; border-bottom:1px solid var(--border); white-space:nowrap; }
+  table.data td.num{ font-family:"IBM Plex Mono", monospace; text-align:right; font-variant-numeric:tabular-nums; }
+  table.data tbody tr:hover{ background: var(--qs-bg); }
+  .pill{ display:inline-flex; align-items:center; gap:5px; font-size:0.72rem; font-weight:600; padding:3px 9px; border-radius:100px; }
+  .pill.ok{ background:var(--good-bg); color:var(--good); }
+  .pill.ecart{ background:var(--critical-bg); color:var(--critical); }
+  .pill-dot{ width:6px; height:6px; border-radius:50%; background:currentColor; }
+  .max-h{ max-height:360px; overflow-y:auto; }
+
+  /* unmatched + anomalies */
+  .unmatched-grid{ display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+  @media (max-width:700px){ .unmatched-grid{ grid-template-columns:1fr; } }
+  .um-col h3{ font-size:0.82rem; margin:0 0 8px; display:flex; align-items:center; gap:7px; }
+  .um-list{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:5px; max-height:260px; overflow-y:auto; }
+  .um-list li{ font-size:0.8rem; padding:6px 10px; background:var(--page-plane); border-radius:8px; border:1px solid var(--border); }
+  .um-sheet-tag{ font-size:0.68rem; color:var(--text-muted); margin-left:6px; }
+
+  .anom-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:12px; }
+  @media (max-width:860px){ .anom-grid{ grid-template-columns:1fr; } }
+  .anom-card{ border:1px solid var(--border); border-radius:12px; padding:13px 14px; background:var(--page-plane); }
+  .anom-card h4{ font-size:0.82rem; margin:0 0 6px; line-height:1.3; }
+  .anom-card .loc{ font-size:0.72rem; color:var(--qs); font-family:"IBM Plex Mono", monospace; margin-bottom:6px; }
+  .anom-card p{ font-size:0.78rem; color:var(--text-secondary); margin:0; line-height:1.45; }
+
+  footer{ text-align:center; color:var(--text-muted); font-size:0.74rem; margin-top:26px; }
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div>
+      <h1>Réconciliation QuickSight vs Ysmael</h1>
+      <p class="subtitle">Abonnements &amp; facturation MTN / Orange — Côte d'Ivoire, 1&ndash;19 août 2026. Comparaison brute, sans normalisation ni correction.</p>
+    </div>
+    <div class="badge-row">
+      <span class="src-badge"><span class="src-dot" style="background:var(--qs)"></span>QuickSight</span>
+      <span class="src-badge"><span class="src-dot" style="background:var(--ysmael)"></span>Ysmael</span>
+    </div>
+  </header>
+
+  <div class="filterbar">
+    <div class="filter-group">
+      <span class="filter-label">Feuille</span>
+      <div class="seg" id="sheetSeg">
+        <button data-val="Tous" class="active">Toutes</button>
+        <button data-val="Organic">Organic</button>
+        <button data-val="Bundle">Bundle</button>
+      </div>
+    </div>
+    <div class="filter-group">
+      <span class="filter-label">Gateway</span>
+      <div class="seg" id="gwSeg">
+        <button data-val="Tous" class="active">Tous</button>
+        <button data-val="MTN-CIV-Fr">MTN</button>
+        <button data-val="OrangeDigiPay-CIV-Fr">Orange</button>
+      </div>
+    </div>
+    <div class="filter-group">
+      <span class="filter-label">Métrique</span>
+      <select id="metricSel"></select>
+    </div>
+  </div>
+
+  <div class="kpi-grid" id="kpiGrid"></div>
+
+  <section class="panel">
+    <div class="chart-grid">
+      <div>
+        <h2 id="trendTitle">—</h2>
+        <p class="panel-sub">Somme quotidienne, filtrée par feuille et gateway sélectionnés.</p>
+        <div class="legend">
+          <span class="legend-item"><span class="legend-swatch" style="background:var(--qs)"></span>QuickSight</span>
+          <span class="legend-item"><span class="legend-swatch" style="background:var(--ysmael)"></span>Ysmael</span>
+        </div>
+        <div style="position:relative">
+          <svg class="chart" id="trendChart" viewBox="0 0 640 300" preserveAspectRatio="xMidYMid meet"></svg>
+          <div class="tooltip" id="trendTooltip"></div>
+        </div>
+      </div>
+      <div>
+        <h2>Concordance à ±5%</h2>
+        <p class="panel-sub">Part des couples date+gateway concordants, par métrique.</p>
+        <div class="legend">
+          <span class="legend-item"><span class="legend-swatch" style="background:var(--organic)"></span>Organic</span>
+          <span class="legend-item"><span class="legend-swatch" style="background:var(--bundle)"></span>Bundle</span>
+        </div>
+        <div style="position:relative">
+          <svg class="chart" id="barChart" viewBox="0 0 420 300" preserveAspectRatio="xMidYMid meet"></svg>
+          <div class="tooltip" id="barTooltip"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="panel">
+    <h2 id="tableTitle">Détail par date &amp; gateway</h2>
+    <p class="panel-sub" id="tableSub">—</p>
+    <div class="table-scroll max-h">
+      <table class="data" id="detailTable">
+        <thead><tr>
+          <th>Date</th><th>Feuille</th><th>Gateway</th>
+          <th style="text-align:right">QuickSight</th><th style="text-align:right">Ysmael</th>
+          <th style="text-align:right">Écart</th><th>Statut</th>
+        </tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="panel">
+    <h2>Canaux non appariés</h2>
+    <p class="panel-sub">Noms de canaux présents d'un seul côté après normalisation (espaces/casse) — non comptés comme écart de valeur.</p>
+    <div class="unmatched-grid" id="unmatchedGrid"></div>
+  </section>
+
+  <section class="panel">
+    <h2>Anomalies structurelles connues</h2>
+    <p class="panel-sub">Repérées lors du diagnostic qualité préalable — à garder en tête en lisant les chiffres ci-dessus.</p>
+    <div class="anom-grid" id="anomGrid"></div>
+  </section>
+
+  <footer>Généré à partir de CIV_Aug2026_Data_Quick_Sight.xlsx et CIV_August2026_Data_Ysmael.xlsx — comparaison brute (aucune correction appliquée).</footer>
+</div>
+
+<script>
+const DATA = {"rows": [{"sheet": "Organic", "date": "2026-08-01", "gateway": "MTN-CIV-Fr", "match": "Present des 2 cotes", "billed_users": {"qs": 24791.0, "ysmael": 520.0, "delta_pct": -0.9790246460409019, "statut": "ECART (>5%)"}, "revenue_xaf": {"qs": 6517901.0, "ysmael": 520.0, "delta_pct": -0.9999202197149052, "statut": "ECART (>5%)"}, "active_users": {"qs": 44463.0, "ysmael": 51570.0, "delta_pct": 0.1598407664799946, "statut": "ECART (>5%)"}, "new_subscribers": {"qs": 3570.0, "ysmael": 124046.0, "delta_pct": 33.74677871148459, "statut": "ECART (>5%)"}, "unsubscribers": {"qs": 1932.0, "ysmael": 40.0, "delta_pct": -0.979296066252588, "statut": "ECART (>5%)"}}, {"sheet": "Organic", "date": "2026-08-01", "gateway": "OrangeDigiPay-CIV-Fr", "match": "Present des 2 cotes", "billed_users": {"qs": 9109.0, "ysmael": 9.0, "delta_pct": -0.9990119661872873, "statut": "ECART (>5%)"}, "revenue_xaf": {"qs": 2879646.0, "ysmael": 9.0, "delta_pct": -0.9999968746158382, "statut": "ECART (>5%)"}, "active_users": {"qs": 15219.0, "ysmael": 2100.0, "delta_pct": -0.8620145870293712, "statut": "ECART (>5%)"}, "new_subscribers": {"qs": 1203.0, "ysmael": 132.0, "delta_pct": -0.8902743142144638, "statut": "ECART (>5%)"}, "unsubscribers": {"qs": 861.0, "ysmael": 3.0, "delta_pct": -0.9965156794425087, "statut": "ECART (>5%)"}}, {"sheet": "Organic", "date": "2026-08-02", "gateway": "MTN-CIV-Fr", "match": "Present des 2 cotes", "billed_users": {"qs": 22247.0, "ysmael": 314.0, "delta_pct": -0.9858857374027958, "statut": "ECART (>5%)"}, "revenue_xaf": {"qs": 5781787.0, "ysmael": 314.0, "delta_pct": -0.9999456915310093, "statut": "ECART (>5%)"}, "active_users": {"qs": 44426.0, "ysmael": 31800.0, "delta_pct": -0.284202944221852, "statut": "ECART (>5%)"}, "new_subscribers": {"qs": 3200.0, "ysmael": 121290.0, "delta_pct": 36.903125, "statut": "ECART (>5%)"}, "unsubscribers": {"qs": 1565.0, "ysmael": 393.0, "delta_pct": -0.7488817891373802, "statut": "ECART (>5%)"}}, {"sheet": "Organic", "date": "2026-08-02", "gateway": "OrangeDigiPay-CIV-Fr", "match": "Present des 2 cotes", "billed_users": {"qs": 9466.0, "ysmael": 4.0, "delta_pct": -0.999577435030636, "statut": "ECART (>5%)"}, "revenue_xaf": {"qs": 2999765.0, "ysmael": 4.0, "delta_pct": -0.999998666562214, "statut": "ECART (>5%)"}, "active_users": {"qs": 14542.0, "ysmael": 600.0, "delta_pct": -0.9587402007976894, "statut": "ECART (>5%)"}, "new_subscribers": {"qs": 1508.0, "ysmael": 81.0, "delta_pct": -0.9462864721485411, "statut": "ECART (>5%)"}, "unsubscribers": {"qs": 785.0, "ysmael": 6.0, "delta_pct": -0.9923566878980892, "statut": "ECART (>5%)"}}, {"sheet": "Organic", "date": "2026-08-03", "gateway": "MTN-CIV-Fr", "match": "Present des 2 cotes", "billed_users": {"qs": 21715.0, "ysmael": 230.0, "delta_pct": -0.9894082431498964, "statut": "ECART (>5%)"}, "revenue_xaf": {"qs": 5775856.0, "ysmael": 230.0, "delta_pct": -0.9999601790626359, "statut": "ECART (>5%)"}, "active_users": {"qs": 43639.0, "ysmael": 25310.0, "delta_pct": -0.420014207474965, "statut": "ECART (>5%)"}, "new_subscribers": {"qs": 3687.0, "ysmael": 97486.0, "delta_pct": 25.44046650393274, "statut": "ECART (>5%)"}, "unsubscribers": {"qs": 2024.0, "ysmael": 41.0, "delta_pct": -0.9797430830039525, "statut": "ECART (>5%)"}}, {"sheet": "Organic", "date": "2026-08-03", "gateway": "OrangeDigiPay-CIV-Fr", "match": "Present des 2 cotes", "billed_users": {"qs": 8570.0, "ysmael": 7.0, "delta_pct": -0.9991831971995333, "statut": "ECART (>5%)"}, "revenue_xaf": {"qs": 2684834.0, "ysmael": 7.0, "delta_pct": -0.9999973927624576, "statut": "ECART (>5%)"}, "active_users": {"qs": 13670.0, "ysmael": 1350.0, "delta_pct": -0.9012435991221653, "statut": "ECART (>5%)"}, "new_subscribers": {"qs": 1087.0, "ysmael": 96.0, "delta_pct": -0.9116835326586936, "statut": "ECART (>5%)"}, "unsubscribers": {"qs": 570.0, "ysmael": 4.0, "delta_pct": -0.9929824561403509, "statut": "ECART (>5%)"}}, {"sheet": "Organic", "date": "2026-08-04", "gateway": "MTN-CIV-Fr", "match": "Present des 2 cotes", "billed_users": {"qs": 24191.0, "ysmael": 225.0, "delta_pct": -0.9906990202968046, "statut": "ECART (>5%)"}, "revenue_xaf": {"qs": 6339947.0, "ysmael": 225.0, "delta_pct": -0.9999645107443327, "statut": "ECART (>5%)"}, "active_users": {"qs": 44285.0, "ysmael": 34885.0, "delta_pct": -0.2122614880885176, "statut": "ECART (>5%)"}, "new_subscribers": {"qs": 3543.0, "ysmael": 117215.0, "delta_pct": 32.08354501834604, "statut": "ECART (>5%)"}, "unsubscribers": {"qs": 2201.0, "ysmael": 29.0, "delta_pct": -0.9868241708314403, "statut": "ECART (>5%)"}}, {"sheet": "Organic", "date": "2026-08-04", "gateway": "OrangeDigiPay-CIV-Fr", "match": "Present des 2 cotes", "billed_users": {"qs": 10114.0, "ysmael": 5.0, "delta_pct": -0.9995056357524224, "statut": "ECART (>5%)"}, "revenue_xaf": {"qs": 3145955.0, "ysmael": 5.0, "delta_pct": -0.9999984106574951, "statut": "ECART (>5%)"}, "active_users": {"qs": 14126.0, "ysmael": 750.0, "delta_pct": -0.9469064137052244, "statut": "ECART (>5%)"}, "new_subscribers": {"qs": 1233.0, "ysmael": 87.0, "delta_pct": -0.9294403892944039, "statut": "ECART (>5%)"}, "unsubscribers": {"qs": 1112.0, "ysmael": 5.0, "delta_pct": -0.9955035971223022, "statut": "ECART (>5%)"}}, {"sheet": "Organic", "date": "2026-08-05", "gateway": "MTN-CIV-Fr", "match": "Present des 2 cotes", "billed_users": {"qs": 22125.0, "ysmael": 163.0, "delta_pct": -0.9926327683615819, "statut": "ECART (>5%)"}, "revenue_xaf": {"qs": 5862193.0, "ysmael": 163.0, "delta_pct": -0.9999721947059743, "statut": "ECART (>5%)"}, "active_users": {"qs": 43031.0, "ysmael": 20880.0, "delta_pct": -0.5147684227649834, "statut": "ECART (>5%)"}, "new_subscribers": {"qs": 3423.0, "ysmael": 92651.0, "delta_pct": 26.06719252118025, "statut": "ECART (>5%)"}, "unsubscribers": {"qs": 1781.0, "ysmael": 25.0, "delta_pct": -0.9859629421673217, "statut": "ECART (>5%)"}}, {"sheet": "Organic", "date": "2026-08-05", "gateway": "OrangeDigiPay-CIV-Fr", "match": "Present des 2 cotes", "billed_users": {"qs": 9566.0, "ysmael": 7.0, "delta_pct": -0.9992682416893164, "statut": "ECART (>5%)"}, "revenue_xaf": {"qs": 3165974.0, "ysmael": 7.0, "delta_pct": -0.9999977889900549, "statut": "ECART (>5%)"}, "active_users": {"qs": 14546.0, "ysmael": 1125.0, "delta_pct": -0.9226591502818644, "statut": "ECART (>5%)"}, "new_subscribers": {"qs": 1763.0, "ysmael": 89.0, "delta_pct": -0.949517867271696, "statut": "ECART (>5%)"}, "unsubscribers": {"qs": 815.0, "ysmael": 4.0, "delta_pct": -0.9950920245398773, "statut": "ECART (>5%)"}}, {"sheet": "Organic", "date": "2026-08-06", "gateway": "MTN-CIV-Fr", "match": "Present des 2 cotes", "billed_users": {"qs": 24185.0, "ysmael": 177.0, "delta_pct": -0.9926814140996485, "statut": "ECART (>5%)"}, "revenue_xaf": {"qs": 6424161.0, "ysmael": 177.0, "delta_pct": -0.999972447763996, "statut": "ECART (>5%)"}, "active_users": {"qs": 44068.0, "ysmael": 26635.0, "delta_pct": -0.3955931741853499, "statut": "ECART (>5%)"}, "new_subscribers": {"qs": 3433.0, "ysmael": 121566.0, "delta_pct": 34.41101077774541, "statut": "ECART (>5%)"}, "unsubscribers": {"qs": 1929.0, "ysmael": 7266.0, "delta_pct": 2.766718506998445, "statut": "ECART (>5%)"}}, {"sheet": "Organic", "date": "2026-08-06", "gateway": "OrangeDigiPay-CIV-Fr", "match": "Present des 2 cotes", "billed_users": {"qs": 9345.0, "ysmael": 5.0, "delta_pct": -0.9994649545211343, "statut": "ECART (>5%)"}, "revenue_xaf": {"qs": 2986792.0, "ysmael": 5.0, "delta_pct": -0.9999983259631069, "statut": "ECART (>5%)"}, "active_users": {"qs": 14600.0, "ysmael": 900.0, "delta_pct": -0.9383561643835616, "statut": "ECART (>5%)"}, "new_subscribers": {"qs": 1310.0, "ysmael": 117.0, "delta_pct": -0.9106870229007633, "statut": "ECART (>5%)"}, "unsubscribers": {"qs": 945.0, "ysmael": 0.0, "delta_pct": -1.0, "statut": "ECART (>5%)"}}, {"sheet": "Organic", "date": "2026-08-07", "gateway": "MTN-CIV-Fr", "match": "Present des 2 cotes", "billed_users": {"qs": 23256.0, "ysmael": 347.0, "delta_pct": -0.9850791193670451, "statut": "ECART (>5%)"}, "revenue_xaf": {"qs": 6236341.0, "ysmael": 343.0, "delta_pct": -0.9999449998003637, "statut": "ECART (>5%)"}, "active_users": {"qs": 43906.0, "ysmael": 56405.0, "delta_pct": 0.2846763540290621, "statut": "ECART (>5%)"}, "new_subscribers": {"qs": 3391.0, "ysmael": 128335.0, "delta_pct": 36.84576820996756, "statut": "ECART (>5%)"}, "unsubscribers": {"qs": 1999.0, "ysmael": 6545.0, "delta_pct": 2.274137068534267, "statut": "ECART (>5%)"}}, {"sheet": "Organic", "date": "2026-08-07", "gateway": "OrangeDigiPay-CIV-Fr", "match": "Present des 2 cotes", "billed_users": {"qs": 8975.0, "ysmael": 7.0, "delta_pct": -0.9992200557103064, "statut": "ECART (>5%)"}, "revenue_xaf": {"qs": 2952825.0, "ysmael": 7.0, "delta_pct": -0.9999976293888057, "statut": "ECART (>5%)"}, "active_users": {"qs": 13885.0, "ysmael": 1125.0, "delta_pct": -0.9189773136478214, "statut": "ECART (>5%)"}, "new_subscribers": {"qs": 1421.0, "ysmael": 102.0, "delta_pct": -0.928219563687544, "statut": "ECART (>5%)"}, "unsubscribers": {"qs": 725.0, "ysmael": 8.0, "delta_pct": -0.9889655172413793, "statut": "ECART (>5%)"}}, {"sheet": "Organic", "date": "2026-08-08", "gateway": "MTN-CIV-Fr", "match": "Present des 2 cotes", "billed_users": {"qs": 23456.0, "ysmael": 367.0, "delta_pct": -0.9843536834924966, "statut": "ECART (>5%)"}, "revenue_xaf": {"qs": 6158304.0, "ysmael": 366.0, "delta_pct": -0.9999405680525028, "statut": "ECART (>5%)"}, "active_users": {"qs": 44199.0, "ysmael": 60745.0, "delta_pct": 0.3743523609131428, "statut": "ECART (>5%)"}, "new_subscribers": {"qs": 3603.0, "ysmael": 132824.0, "delta_pct": 35.86483485983902, "statut": "ECART (>5%)"}, "unsubscribers": {"qs": 2401.0, "ysmael": 6339.0, "delta_pct": 1.640149937526031, "statut": "ECART (>5%)"}}, {"sheet": "Organic", "date": "2026-08-08", "gateway": "OrangeDigiPay-CIV-Fr", "match": "Present des 2 cotes", "billed_users": {"qs": 8730.0, "ysmael": 7.0, "delta_pct": -0.9991981672394044, "statut": "ECART (>5%)"}, "revenue_xaf": {"qs": 2896192.0, "ysmael": 7.0, "delta_pct": -0.9999975830331691, "statut": "ECART (>5%)"}, "active_users": {"qs": 14114.0, "ysmael": 1305.0, "delta_pct": -0.9075386141419867, "statut": "ECART (>5%)"}, "new_subscribers": {"qs": 1189.0, "ysmael": 145.0, "delta_pct": -0.8780487804878049, "statut": "ECART (>5%)"}, "unsubscribers": {"qs": 798.0, "ysmael": 2.0, "delta_pct": -0.9974937343358395, "statut": "ECART (>5%)"}}, {"sheet": "Organic", "date": "2026-08-09", "gateway": "MTN-CIV-Fr", "match": "Present des 2 cotes", "billed_users": {"qs": 22597.0, "ysmael": 319.0, "delta_pct": -0.985883081825021, "statut": "ECART (>5%)"}, "revenue_xaf": {"qs": 5953721.0, "ysmael": 319.0, "delta_pct": -0.9999464200623442, "statut": "ECART (>5%)"}, "active_users": {"qs": 43669.0, "ysmael": 53890.0, "delta_pct": 0.234056195470471, "statut": "ECART (>5%)"}, "new_subscribers": {"qs": 2729.0, "ysmael": 131524.0, "delta_pct": 47.19494320263833, "statut": "ECART (>5%)"}, "unsubscribers": {"qs": 1902.0, "ysmael": 34.0, "delta_pct": -0.982124079915878, "statut": "ECART (>5%)"}}, {"sheet": "Organic", "date": "2026-08-09", "gateway": "OrangeDigiPay-CIV-Fr", "match": "Present des 2 cotes", "billed_users": {"qs": 9265.0, "ysmael": 4.0, "delta_pct": -0.999568267674042, "statut": "ECART (>5%)"}, "revenue_xaf": {"qs": 3020257.0, "ysmael": 4.0, "delta_pct": -0.9999986756093935, "statut": "ECART (>5%)"}, "active_users": {"qs": 13815.0, "ysmael": 600.0, "delta_pct": -0.9565689467969598, "statut": "ECART (>5%)"}, "new_subscribers": {"qs": 1581.0, "ysmael": 91.0, "delta_pct": -0.9424414927261227, "statut": "ECART (>5%)"}, "unsubscribers": {"qs": 714.0, "ysmael": 2.0, "delta_pct": -0.9971988795518207, "statut": "ECART (>5%)"}}, {"sheet": "Organic", "date": "2026-08-10", "gateway": "MTN-CIV-Fr", "match": "Present des 2 cotes", "billed_users": {"qs": 21763.0, "ysmael": 435.0, "delta_pct": -0.9800119468823232, "statut": "ECART (>5%)"}, "revenue_xaf": {"qs": 5839333.0, "ysmael": 435.0, "delta_pct": -0.9999255051904045, "statut": "ECART (>5%)"}, "active_users": {"qs": 44141.0, "ysmael": 57285.0, "delta_pct": 0.2977730454679323, "statut": "ECART (>5%)"}, "new_subscribers": {"qs": 2771.0, "ysmael": 107310.0, "delta_pct": 37.72609166365933, "statut": "ECART (>5%)"}, "unsubscribers": {"qs": 2008.0, "ysmael": 5984.0, "delta_pct": 1.9800796812749, "statut": "ECART (>5%)"}}, {"sheet": "Organic", "date": "2026-08-10", "gateway": "OrangeDigiPay-CIV-Fr", "match": "Present des 2 cotes", "billed_users": {"qs": 8725.0, "ysmael": 10.0, "delta_pct": -0.9988538681948425, "statut": "ECART (>5%)"}, "revenue_xaf": {"qs": 2842743.0, "ysmael": 10.0, "delta_pct": -0.9999964822708208, "statut": "ECART (>5%)"}, "active_users": {"qs": 13691.0, "ysmael": 1725.0, "delta_pct": -0.8740048206851216, "statut": "ECART (>5%)"}, "new_subscribers": {"qs": 1409.0, "ysmael": 150.0, "delta_pct": -0.893541518807665, "statut": "ECART (>5%)"}, "unsubscribers": {"qs": 924.0, "ysmael": 9.0, "delta_pct": -0.9902597402597403, "statut": "ECART (>5%)"}}, {"sheet": "Organic", "date": "2026-08-11", "gateway": "MTN-CIV-Fr", "match": "Present des 2 cotes", "billed_users": {"qs": 20382.0, "ysmael": 575.0, "delta_pct": -0.9717888332842705, "statut": "ECART (>5%)"}, "revenue_xaf": {"qs": 5360943.0, "ysmael": 572.0, "delta_pct": -0.999893302353709, "statut": "ECART (>5%)"}, "active_users": {"qs": 44518.0, "ysmael": 77100.0, "delta_pct": 0.7318837324228402, "statut": "ECART (>5%)"}, "new_subscribers": {"qs": 3206.0, "ysmael": 140818.0, "delta_pct": 42.92326887086713, "statut": "ECART (>5%)"}, "unsubscribers": {"qs": 1839.0, "ysmael": 9219.0, "delta_pct": 4.01305057096248, "statut": "ECART (>5%)"}}, {"sheet": "Organic", "date": "2026-08-11", "gateway": "OrangeDigiPay-CIV-Fr", "match": "Present des 2 cotes", "billed_users": {"qs": 9739.0, "ysmael": 6.0, "delta_pct": -0.9993839203203614, "statut": "ECART (>5%)"}, "revenue_xaf": {"qs": 2905493.0, "ysmael": 6.0, "delta_pct": -0.9999979349459799, "statut": "ECART (>5%)"}, "active_users": {"qs": 14546.0, "ysmael": 855.0, "delta_pct": -0.9412209542142169, "statut": "ECART (>5%)"}, "new_subscribers": {"qs": 1245.0, "ysmael": 98.0, "delta_pct": -0.921285140562249, "statut": "ECART (>5%)"}, "unsubscribers": {"qs": 682.0, "ysmael": 7.0, "delta_pct": -0.9897360703812317, "statut": "ECART (>5%)"}}, {"sheet": "Organic", "date": "2026-08-12", "gateway": "MTN-CIV-Fr", "match": "Present des 2 cotes", "billed_users": {"qs": 21879.0, "ysmael": 689.0, "delta_pct": -0.9685086155674391, "statut": "ECART (>5%)"}, "revenue_xaf": {"qs": 5739326.0, "ysmael": 685.0, "delta_pct": -0.9998806480064035, "statut": "ECART (>5%)"}, "active_users": {"qs": 41296.0, "ysmael": 77290.0, "delta_pct": 0.8716098411468423, "statut": "ECART (>5%)"}, "new_subscribers": {"qs": 3051.0, "ysmael": 123764.0, "delta_pct": 39.56506063585709, "statut": "ECART (>5%)"}, "unsubscribers": {"qs": 1592.0, "ysmael": 7605.0, "delta_pct": 3.777010050251256, "statut": "ECART (>5%)"}}, {"sheet": "Organic", "date": "2026-08-12", "gateway": "OrangeDigiPay-CIV-Fr", "match": "Present des 2 cotes", "billed_users": {"qs": 8454.0, "ysmael": 6.0, "delta_pct": -0.9992902767920511, "statut": "ECART (>5%)"}, "revenue_xaf": {"qs": 2790446.0, "ysmael": 6.0, "delta_pct": -0.9999978498060883, "statut": "ECART (>5%)"}, "active_users": {"qs": 14033.0, "ysmael": 1050.0, "delta_pct": -0.9251763699850353, "statut": "ECART (>5%)"}, "new_subscribers": {"qs": 1384.0, "ysmael": 117.0, "delta_pct": -0.9154624277456648, "statut": "ECART (>5%)"}, "unsubscribers": {"qs": 606.0, "ysmael": 1.0, "delta_pct": -0.9983498349834984, "statut": "ECART (>5%)"}}, {"sheet": "Organic", "date": "2026-08-13", "gateway": "MTN-CIV-Fr", "match": "Present des 2 cotes", "billed_users": {"qs": 21462.0, "ysmael": 522.0, "delta_pct": -0.9756779424098406, "statut": "ECART (>5%)"}, "revenue_xaf": {"qs": 5744576.0, "ysmael": 522.0, "delta_pct": -0.9999091316748181, "statut": "ECART (>5%)"}, "active_users": {"qs": 44836.0, "ysmael": 59515.0, "delta_pct": 0.3273931662057276, "statut": "ECART (>5%)"}, "new_subscribers": {"qs": 3530.0, "ysmael": 139383.0, "delta_pct": 38.48526912181303, "statut": "ECART (>5%)"}, "unsubscribers": {"qs": 2072.0, "ysmael": 6272.0, "delta_pct": 2.027027027027027, "statut": "ECART (>5%)"}}, {"sheet": "Organic", "date": "2026-08-13", "gateway": "OrangeDigiPay-CIV-Fr", "match": "Present des 2 cotes", "billed_users": {"qs": 9329.0, "ysmael": 6.0, "delta_pct": -0.9993568442491156, "statut": "ECART (>5%)"}, "revenue_xaf": {"qs": 2943109.0, "ysmael": 6.0, "delta_pct": -0.9999979613395222, "statut": "ECART (>5%)"}, "active_users": {"qs": 14140.0, "ysmael": 750.0, "delta_pct": -0.946958981612447, "statut": "ECART (>5%)"}, "new_subscribers": {"qs": 1437.0, "ysmael": 94.0, "delta_pct": -0.9345859429366736, "statut": "ECART (>5%)"}, "unsubscribers": {"qs": 907.0, "ysmael": 1.0, "delta_pct": -0.9988974641675854, "statut": "ECART (>5%)"}}, {"sheet": "Organic", "date": "2026-08-14", "gateway": "MTN-CIV-Fr", "match": "Present des 2 cotes", "billed_users": {"qs": 22040.0, "ysmael": 542.0, "delta_pct": -0.9754083484573502, "statut": "ECART (>5%)"}, "revenue_xaf": {"qs": 5868984.0, "ysmael": 542.0, "delta_pct": -0.9999076501145684, "statut": "ECART (>5%)"}, "active_users": {"qs": 41668.0, "ysmael": 75790.0, "delta_pct": 0.8189017951425555, "statut": "ECART (>5%)"}, "new_subscribers": {"qs": 3336.0, "ysmael": 139426.0, "delta_pct": 40.79436450839329, "statut": "ECART (>5%)"}, "unsubscribers": {"qs": 1816.0, "ysmael": 3896.0, "delta_pct": 1.145374449339207, "statut": "ECART (>5%)"}}, {"sheet": "Organic", "date": "2026-08-14", "gateway": "OrangeDigiPay-CIV-Fr", "match": "Present des 2 cotes", "billed_users": {"qs": 9006.0, "ysmael": 8.0, "delta_pct": -0.9991117033089052, "statut": "ECART (>5%)"}, "revenue_xaf": {"qs": 2968688.0, "ysmael": 8.0, "delta_pct": -0.9999973052068792, "statut": "ECART (>5%)"}, "active_users": {"qs": 13293.0, "ysmael": 1350.0, "delta_pct": -0.8984427894380501, "statut": "ECART (>5%)"}, "new_subscribers": {"qs": 1374.0, "ysmael": 132.0, "delta_pct": -0.9039301310043668, "statut": "ECART (>5%)"}, "unsubscribers": {"qs": 934.0, "ysmael": 2.0, "delta_pct": -0.9978586723768736, "statut": "ECART (>5%)"}}, {"sheet": "Organic", "date": "2026-08-15", "gateway": "MTN-CIV-Fr", "match": "Present des 2 cotes", "billed_users": {"qs": 22960.0, "ysmael": 484.0, "delta_pct": -0.9789198606271777, "statut": "ECART (>5%)"}, "revenue_xaf": {"qs": 6016047.0, "ysmael": 484.0, "delta_pct": -0.9999195485008677, "statut": "ECART (>5%)"}, "active_users": {"qs": 43649.0, "ysmael": 64725.0, "delta_pct": 0.4828518408210956, "statut": "ECART (>5%)"}, "new_subscribers": {"qs": 3246.0, "ysmael": 136488.0, "delta_pct": 41.04805914972273, "statut": "ECART (>5%)"}, "unsubscribers": {"qs": 1897.0, "ysmael": 2631.0, "delta_pct": 0.3869267264101213, "statut": "ECART (>5%)"}}, {"sheet": "Organic", "date": "2026-08-15", "gateway": "OrangeDigiPay-CIV-Fr", "match": "Present des 2 cotes", "billed_users": {"qs": 9870.0, "ysmael": 7.0, "delta_pct": -0.999290780141844, "statut": "ECART (>5%)"}, "revenue_xaf": {"qs": 3157377.0, "ysmael": 7.0, "delta_pct": -0.9999977829698512, "statut": "ECART (>5%)"}, "active_users": {"qs": 13698.0, "ysmael": 1260.0, "delta_pct": -0.9080157687253614, "statut": "ECART (>5%)"}, "new_subscribers": {"qs": 1379.0, "ysmael": 124.0, "delta_pct": -0.9100797679477882, "statut": "ECART (>5%)"}, "unsubscribers": {"qs": 1028.0, "ysmael": 1.0, "delta_pct": -0.9990272373540856, "statut": "ECART (>5%)"}}, {"sheet": "Organic", "date": "2026-08-16", "gateway": "MTN-CIV-Fr", "match": "Present des 2 cotes", "billed_users": {"qs": 22541.0, "ysmael": 437.0, "delta_pct": -0.980613105008651, "statut": "ECART (>5%)"}, "revenue_xaf": {"qs": 6021149.0, "ysmael": 435.0, "delta_pct": -0.9999277546528079, "statut": "ECART (>5%)"}, "active_users": {"qs": 44920.0, "ysmael": 58970.0, "delta_pct": 0.3127782724844168, "statut": "ECART (>5%)"}, "new_subscribers": {"qs": 3668.0, "ysmael": 133676.0, "delta_pct": 35.44383860414395, "statut": "ECART (>5%)"}, "unsubscribers": {"qs": 2061.0, "ysmael": 2996.0, "delta_pct": 0.4536632702571567, "statut": "ECART (>5%)"}}, {"sheet": "Organic", "date": "2026-08-16", "gateway": "OrangeDigiPay-CIV-Fr", "match": "Present des 2 cotes", "billed_users": {"qs": 9488.0, "ysmael": 5.0, "delta_pct": -0.999473018549747, "statut": "ECART (>5%)"}, "revenue_xaf": {"qs": 3113180.0, "ysmael": 5.0, "delta_pct": -0.9999983939251826, "statut": "ECART (>5%)"}, "active_users": {"qs": 13678.0, "ysmael": 600.0, "delta_pct": -0.9561339377101915, "statut": "ECART (>5%)"}, "new_subscribers": {"qs": 1535.0, "ysmael": 92.0, "delta_pct": -0.9400651465798046, "statut": "ECART (>5%)"}, "unsubscribers": {"qs": 686.0, "ysmael": 2.0, "delta_pct": -0.9970845481049563, "statut": "ECART (>5%)"}}, {"sheet": "Organic", "date": "2026-08-17", "gateway": "MTN-CIV-Fr", "match": "Present des 2 cotes", "billed_users": {"qs": 22577.0, "ysmael": 381.0, "delta_pct": -0.9831244186561545, "statut": "ECART (>5%)"}, "revenue_xaf": {"qs": 6036034.0, "ysmael": 381.0, "delta_pct": -0.9999368790831861, "statut": "ECART (>5%)"}, "active_users": {"qs": 41860.0, "ysmael": 46180.0, "delta_pct": 0.1032011466794076, "statut": "ECART (>5%)"}, "new_subscribers": {"qs": 3403.0, "ysmael": 110390.0, "delta_pct": 31.4390243902439, "statut": "ECART (>5%)"}, "unsubscribers": {"qs": 2094.0, "ysmael": 1936.0, "delta_pct": -0.07545367717287488, "statut": "ECART (>5%)"}}, {"sheet": "Organic", "date": "2026-08-17", "gateway": "OrangeDigiPay-CIV-Fr", "match": "Present des 2 cotes", "billed_users": {"qs": 9867.0, "ysmael": 7.0, "delta_pct": -0.9992905645079558, "statut": "ECART (>5%)"}, "revenue_xaf": {"qs": 3084653.0, "ysmael": 7.0, "delta_pct": -0.9999977307009897, "statut": "ECART (>5%)"}, "active_users": {"qs": 14374.0, "ysmael": 1350.0, "delta_pct": -0.9060804229859468, "statut": "ECART (>5%)"}, "new_subscribers": {"qs": 1190.0, "ysmael": 103.0, "delta_pct": -0.9134453781512605, "statut": "ECART (>5%)"}, "unsubscribers": {"qs": 897.0, "ysmael": 4.0, "delta_pct": -0.9955406911928651, "statut": "ECART (>5%)"}}, {"sheet": "Organic", "date": "2026-08-18", "gateway": "MTN-CIV-Fr", "match": "Present des 2 cotes", "billed_users": {"qs": 21212.0, "ysmael": 413.0, "delta_pct": -0.9805298887422214, "statut": "ECART (>5%)"}, "revenue_xaf": {"qs": 5592882.0, "ysmael": 412.0, "delta_pct": -0.9999263349378729, "statut": "ECART (>5%)"}, "active_users": {"qs": 44133.0, "ysmael": 56565.0, "delta_pct": 0.2816939704982666, "statut": "ECART (>5%)"}, "new_subscribers": {"qs": 3273.0, "ysmael": 127364.0, "delta_pct": 37.91353498319585, "statut": "ECART (>5%)"}, "unsubscribers": {"qs": 2064.0, "ysmael": 2268.0, "delta_pct": 0.09883720930232558, "statut": "ECART (>5%)"}}, {"sheet": "Organic", "date": "2026-08-18", "gateway": "OrangeDigiPay-CIV-Fr", "match": "Present des 2 cotes", "billed_users": {"qs": 8728.0, "ysmael": 6.0, "delta_pct": -0.9993125572868927, "statut": "ECART (>5%)"}, "revenue_xaf": {"qs": 2768574.0, "ysmael": 6.0, "delta_pct": -0.9999978328193503, "statut": "ECART (>5%)"}, "active_users": {"qs": 14807.0, "ysmael": 975.0, "delta_pct": -0.9341527655838455, "statut": "ECART (>5%)"}, "new_subscribers": {"qs": 1449.0, "ysmael": 112.0, "delta_pct": -0.9227053140096618, "statut": "ECART (>5%)"}, "unsubscribers": {"qs": 671.0, "ysmael": 1.0, "delta_pct": -0.9985096870342772, "statut": "ECART (>5%)"}}, {"sheet": "Organic", "date": "2026-08-19", "gateway": "MTN-CIV-Fr", "match": "Present des 2 cotes", "billed_users": {"qs": 23344.0, "ysmael": 370.0, "delta_pct": -0.9841501028101439, "statut": "ECART (>5%)"}, "revenue_xaf": {"qs": 6231882.0, "ysmael": 370.0, "delta_pct": -0.9999406278873701, "statut": "ECART (>5%)"}, "active_users": {"qs": 43548.0, "ysmael": 50620.0, "delta_pct": 0.162395517589786, "statut": "ECART (>5%)"}, "new_subscribers": {"qs": 3296.0, "ysmael": 116012.0, "delta_pct": 34.19781553398058, "statut": "ECART (>5%)"}, "unsubscribers": {"qs": 2404.0, "ysmael": 2922.0, "delta_pct": 0.2154742096505824, "statut": "ECART (>5%)"}}, {"sheet": "Organic", "date": "2026-08-19", "gateway": "OrangeDigiPay-CIV-Fr", "match": "Present des 2 cotes", "billed_users": {"qs": 9888.0, "ysmael": 8.0, "delta_pct": -0.9991909385113269, "statut": "ECART (>5%)"}, "revenue_xaf": {"qs": 3122699.0, "ysmael": 8.0, "delta_pct": -0.9999974381136318, "statut": "ECART (>5%)"}, "active_users": {"qs": 13764.0, "ysmael": 1470.0, "delta_pct": -0.8931996512641673, "statut": "ECART (>5%)"}, "new_subscribers": {"qs": 1845.0, "ysmael": 143.0, "delta_pct": -0.9224932249322493, "statut": "ECART (>5%)"}, "unsubscribers": {"qs": 795.0, "ysmael": 3.0, "delta_pct": -0.9962264150943396, "statut": "ECART (>5%)"}}, {"sheet": "Bundle", "date": "2026-08-01", "gateway": "MTN-CIV-Fr", "match": "Present des 2 cotes", "billed_users": {"qs": 1568.0, "ysmael": 1415.0, "delta_pct": -0.0975765306122449, "statut": "ECART (>5%)"}, "revenue_xaf": {"qs": 326890.0, "ysmael": 1397.0, "delta_pct": -0.9957263911407507, "statut": "ECART (>5%)"}, "active_users": {"qs": 2824.0, "ysmael": 140490.0, "delta_pct": 48.7485835694051, "statut": "ECART (>5%)"}, "new_subscribers": {"qs": 203.0, "ysmael": 149927.0, "delta_pct": 737.5566502463054, "statut": "ECART (>5%)"}, "unsubscribers": {"qs": 118.0, "ysmael": 568.0, "delta_pct": 3.813559322033898, "statut": "ECART (>5%)"}}, {"sheet": "Bundle", "date": "2026-08-01", "gateway": "OrangeDigiPay-CIV-Fr", "match": "Present des 2 cotes", "billed_users": {"qs": 757.0, "ysmael": 4544.0, "delta_pct": 5.002642007926024, "statut": "ECART (>5%)"}, "revenue_xaf": {"qs": 305739.0, "ysmael": 4472.0, "delta_pct": -0.9853731450681791, "statut": "ECART (>5%)"}, "active_users": {"qs": 1002.0, "ysmael": 599300.0, "delta_pct": 597.1037924151697, "statut": "ECART (>5%)"}, "new_subscribers": {"qs": 103.0, "ysmael": 17595.0, "delta_pct": 169.8252427184466, "statut": "ECART (>5%)"}, "unsubscribers": {"qs": 47.0, "ysmael": 2117.0, "delta_pct": 44.04255319148936, "statut": "ECART (>5%)"}}, {"sheet": "Bundle", "date": "2026-08-02", "gateway": "MTN-CIV-Fr", "match": "Present des 2 cotes", "billed_users": {"qs": 1358.0, "ysmael": 1353.0, "delta_pct": -0.003681885125184094, "statut": "OK (<=5%)"}, "revenue_xaf": {"qs": 290616.0, "ysmael": 1334.0, "delta_pct": -0.9954097503234509, "statut": "ECART (>5%)"}, "active_users": {"qs": 2828.0, "ysmael": 134000.0, "delta_pct": 46.38330975954738, "statut": "ECART (>5%)"}, "new_subscribers": {"qs": 244.0, "ysmael": 145794.0, "delta_pct": 596.516393442623, "statut": "ECART (>5%)"}, "unsubscribers": {"qs": 134.0, "ysmael": 576.0, "delta_pct": 3.298507462686567, "statut": "ECART (>5%)"}}, {"sheet": "Bundle", "date": "2026-08-02", "gateway": "OrangeDigiPay-CIV-Fr", "match": "Present des 2 cotes", "billed_users": {"qs": 588.0, "ysmael": 4597.0, "delta_pct": 6.818027210884353, "statut": "ECART (>5%)"}, "revenue_xaf": {"qs": 244543.0, "ysmael": 4510.0, "delta_pct": -0.9815574357066037, "statut": "ECART (>5%)"}, "active_users": {"qs": 908.0, "ysmael": 597100.0, "delta_pct": 656.5991189427313, "statut": "ECART (>5%)"}, "new_subscribers": {"qs": 117.0, "ysmael": 17122.0, "delta_pct": 145.3418803418803, "statut": "ECART (>5%)"}, "unsubscribers": {"qs": 44.0, "ysmael": 2083.0, "delta_pct": 46.34090909090909, "statut": "ECART (>5%)"}}, {"sheet": "Bundle", "date": "2026-08-03", "gateway": "MTN-CIV-Fr", "match": "Present des 2 cotes", "billed_users": {"qs": 1446.0, "ysmael": 1430.0, "delta_pct": -0.01106500691562932, "statut": "OK (<=5%)"}, "revenue_xaf": {"qs": 289460.0, "ysmael": 1413.0, "delta_pct": -0.9951184965107441, "statut": "ECART (>5%)"}, "active_users": {"qs": 2828.0, "ysmael": 142030.0, "delta_pct": 49.22277227722773, "statut": "ECART (>5%)"}, "new_subscribers": {"qs": 177.0, "ysmael": 140037.0, "delta_pct": 790.1694915254237, "statut": "ECART (>5%)"}, "unsubscribers": {"qs": 148.0, "ysmael": 603.0, "delta_pct": 3.074324324324324, "statut": "ECART (>5%)"}}, {"sheet": "Bundle", "date": "2026-08-03", "gateway": "OrangeDigiPay-CIV-Fr", "match": "Present des 2 cotes", "billed_users": {"qs": 598.0, "ysmael": 5007.0, "delta_pct": 7.372909698996655, "statut": "ECART (>5%)"}, "revenue_xaf": {"qs": 244092.0, "ysmael": 4912.0, "delta_pct": -0.9798764400308081, "statut": "ECART (>5%)"}, "active_users": {"qs": 887.0, "ysmael": 645700.0, "delta_pct": 726.9594137542277, "statut": "ECART (>5%)"}, "new_subscribers": {"qs": 109.0, "ysmael": 17589.0, "delta_pct": 160.3669724770642, "statut": "ECART (>5%)"}, "unsubscribers": {"qs": 57.0, "ysmael": 2193.0, "delta_pct": 37.47368421052632, "statut": "ECART (>5%)"}}, {"sheet": "Bundle", "date": "2026-08-04", "gateway": "MTN-CIV-Fr", "match": "Present des 2 cotes", "billed_users": {"qs": 1340.0, "ysmael": 1456.0, "delta_pct": 0.08656716417910448, "statut": "ECART (>5%)"}, "revenue_xaf": {"qs": 284874.0, "ysmael": 1434.0, "delta_pct": -0.9949661955812044, "statut": "ECART (>5%)"}, "active_users": {"qs": 2671.0, "ysmael": 143180.0, "delta_pct": 52.60539123923624, "statut": "ECART (>5%)"}, "new_subscribers": {"qs": 228.0, "ysmael": 135624.0, "delta_pct": 593.8421052631579, "statut": "ECART (>5%)"}, "unsubscribers": {"qs": 135.0, "ysmael": 601.0, "delta_pct": 3.451851851851852, "statut": "ECART (>5%)"}}, {"sheet": "Bundle", "date": "2026-08-04", "gateway": "OrangeDigiPay-CIV-Fr", "match": "Present des 2 cotes", "billed_users": {"qs": 541.0, "ysmael": 8374.0, "delta_pct": 14.47874306839187, "statut": "ECART (>5%)"}, "revenue_xaf": {"qs": 222535.0, "ysmael": 8305.0, "delta_pct": -0.962680027860786, "statut": "ECART (>5%)"}, "active_users": {"qs": 928.0, "ysmael": 1221400.0, "delta_pct": 1315.163793103448, "statut": "ECART (>5%)"}, "new_subscribers": {"qs": 54.0, "ysmael": 21004.0, "delta_pct": 387.962962962963, "statut": "ECART (>5%)"}, "unsubscribers": {"qs": 40.0, "ysmael": 4060.0, "delta_pct": 100.5, "statut": "ECART (>5%)"}}, {"sheet": "Bundle", "date": "2026-08-05", "gateway": "MTN-CIV-Fr", "match": "Present des 2 cotes", "billed_users": {"qs": 1488.0, "ysmael": 1263.0, "delta_pct": -0.1512096774193548, "statut": "ECART (>5%)"}, "revenue_xaf": {"qs": 308564.0, "ysmael": 1250.0, "delta_pct": -0.9959489765494355, "statut": "ECART (>5%)"}, "active_users": {"qs": 2783.0, "ysmael": 125050.0, "delta_pct": 43.93352497305067, "statut": "ECART (>5%)"}, "new_subscribers": {"qs": 252.0, "ysmael": 131379.0, "delta_pct": 520.3452380952381, "statut": "ECART (>5%)"}, "unsubscribers": {"qs": 99.0, "ysmael": 550.0, "delta_pct": 4.555555555555555, "statut": "ECART (>5%)"}}, {"sheet": "Bundle", "date": "2026-08-05", "gateway": "OrangeDigiPay-CIV-Fr", "match": "Present des 2 cotes", "billed_users": {"qs": 694.0, "ysmael": 4353.0, "delta_pct": 5.272334293948127, "statut": "ECART (>5%)"}, "revenue_xaf": {"qs": 284669.0, "ysmael": 4299.0, "delta_pct": -0.9848982502485343, "statut": "ECART (>5%)"}, "active_users": {"qs": 1020.0, "ysmael": 554200.0, "delta_pct": 542.3333333333334, "statut": "ECART (>5%)"}, "new_subscribers": {"qs": 66.0, "ysmael": 19463.0, "delta_pct": 293.8939393939394, "statut": "ECART (>5%)"}, "unsubscribers": {"qs": 85.0, "ysmael": 1987.0, "delta_pct": 22.37647058823529, "statut": "ECART (>5%)"}}, {"sheet": "Bundle", "date": "2026-08-06", "gateway": "MTN-CIV-Fr", "match": "Present des 2 cotes", "billed_users": {"qs": 1382.0, "ysmael": 1351.0, "delta_pct": -0.02243125904486252, "statut": "OK (<=5%)"}, "revenue_xaf": {"qs": 273288.0, "ysmael": 1336.0, "delta_pct": -0.9951113843271567, "statut": "ECART (>5%)"}, "active_users": {"qs": 2949.0, "ysmael": 133840.0, "delta_pct": 44.38487622923025, "statut": "ECART (>5%)"}, "new_subscribers": {"qs": 201.0, "ysmael": 125980.0, "delta_pct": 625.7661691542288, "statut": "ECART (>5%)"}, "unsubscribers": {"qs": 144.0, "ysmael": 611.0, "delta_pct": 3.243055555555555, "statut": "ECART (>5%)"}}, {"sheet": "Bundle", "date": "2026-08-06", "gateway": "OrangeDigiPay-CIV-Fr", "match": "Present des 2 cotes", "billed_users": {"qs": 741.0, "ysmael": 4728.0, "delta_pct": 5.380566801619433, "statut": "ECART (>5%)"}, "revenue_xaf": {"qs": 304394.0, "ysmael": 4651.0, "delta_pct": -0.9847204609814911, "statut": "ECART (>5%)"}, "active_users": {"qs": 923.0, "ysmael": 596200.0, "delta_pct": 644.9371614301192, "statut": "ECART (>5%)"}, "new_subscribers": {"qs": 94.0, "ysmael": 18452.0, "delta_pct": 195.2978723404255, "statut": "ECART (>5%)"}, "unsubscribers": {"qs": 56.0, "ysmael": 2213.0, "delta_pct": 38.51785714285715, "statut": "ECART (>5%)"}}, {"sheet": "Bundle", "date": "2026-08-07", "gateway": "MTN-CIV-Fr", "match": "Present des 2 cotes", "billed_users": {"qs": 1302.0, "ysmael": 1545.0, "delta_pct": 0.1866359447004608, "statut": "ECART (>5%)"}, "revenue_xaf": {"qs": 273316.0, "ysmael": 1518.0, "delta_pct": -0.9944459892578553, "statut": "ECART (>5%)"}, "active_users": {"qs": 2871.0, "ysmael": 152310.0, "delta_pct": 52.05120167189133, "statut": "ECART (>5%)"}, "new_subscribers": {"qs": 219.0, "ysmael": 121206.0, "delta_pct": 552.4520547945206, "statut": "ECART (>5%)"}, "unsubscribers": {"qs": 98.0, "ysmael": 671.0, "delta_pct": 5.846938775510204, "statut": "ECART (>5%)"}}, {"sheet": "Bundle", "date": "2026-08-07", "gateway": "OrangeDigiPay-CIV-Fr", "match": "Present des 2 cotes", "billed_users": {"qs": 712.0, "ysmael": 5564.0, "delta_pct": 6.814606741573034, "statut": "ECART (>5%)"}, "revenue_xaf": {"qs": 286059.0, "ysmael": 5457.0, "delta_pct": -0.9809235157782136, "statut": "ECART (>5%)"}, "active_users": {"qs": 947.0, "ysmael": 714000.0, "delta_pct": 752.9598732840549, "statut": "ECART (>5%)"}, "new_subscribers": {"qs": 122.0, "ysmael": 19427.0, "delta_pct": 158.2377049180328, "statut": "ECART (>5%)"}, "unsubscribers": {"qs": 53.0, "ysmael": 2623.0, "delta_pct": 48.49056603773585, "statut": "ECART (>5%)"}}, {"sheet": "Bundle", "date": "2026-08-08", "gateway": "MTN-CIV-Fr", "match": "Present des 2 cotes", "billed_users": {"qs": 1411.0, "ysmael": 1334.0, "delta_pct": -0.05457122608079376, "statut": "ECART (>5%)"}, "revenue_xaf": {"qs": 293689.0, "ysmael": 1322.0, "delta_pct": -0.9954986397175243, "statut": "ECART (>5%)"}, "active_users": {"qs": 2730.0, "ysmael": 131850.0, "delta_pct": 47.2967032967033, "statut": "ECART (>5%)"}, "new_subscribers": {"qs": 199.0, "ysmael": 116717.0, "delta_pct": 585.5175879396985, "statut": "ECART (>5%)"}, "unsubscribers": {"qs": 122.0, "ysmael": 569.0, "delta_pct": 3.663934426229508, "statut": "ECART (>5%)"}}, {"sheet": "Bundle", "date": "2026-08-08", "gateway": "OrangeDigiPay-CIV-Fr", "match": "Present des 2 cotes", "billed_users": {"qs": 529.0, "ysmael": 4946.0, "delta_pct": 8.349716446124763, "statut": "ECART (>5%)"}, "revenue_xaf": {"qs": 212553.0, "ysmael": 4858.0, "delta_pct": -0.9771445239540256, "statut": "ECART (>5%)"}, "active_users": {"qs": 749.0, "ysmael": 631300.0, "delta_pct": 841.8571428571429, "statut": "ECART (>5%)"}, "new_subscribers": {"qs": 62.0, "ysmael": 19434.0, "delta_pct": 312.4516129032258, "statut": "ECART (>5%)"}, "unsubscribers": {"qs": 38.0, "ysmael": 2239.0, "delta_pct": 57.92105263157895, "statut": "ECART (>5%)"}}, {"sheet": "Bundle", "date": "2026-08-09", "gateway": "MTN-CIV-Fr", "match": "Present des 2 cotes", "billed_users": {"qs": 1362.0, "ysmael": 1253.0, "delta_pct": -0.08002936857562408, "statut": "ECART (>5%)"}, "revenue_xaf": {"qs": 268792.0, "ysmael": 1232.0, "delta_pct": -0.9954165302538766, "statut": "ECART (>5%)"}, "active_users": {"qs": 2550.0, "ysmael": 123900.0, "delta_pct": 47.58823529411764, "statut": "ECART (>5%)"}, "new_subscribers": {"qs": 258.0, "ysmael": 111816.0, "delta_pct": 432.3953488372093, "statut": "ECART (>5%)"}, "unsubscribers": {"qs": 106.0, "ysmael": 530.0, "delta_pct": 4.0, "statut": "ECART (>5%)"}}, {"sheet": "Bundle", "date": "2026-08-09", "gateway": "OrangeDigiPay-CIV-Fr", "match": "Present des 2 cotes", "billed_users": {"qs": 641.0, "ysmael": 4683.0, "delta_pct": 6.305772230889236, "statut": "ECART (>5%)"}, "revenue_xaf": {"qs": 254409.0, "ysmael": 4579.0, "delta_pct": -0.9820014229056362, "statut": "ECART (>5%)"}, "active_users": {"qs": 885.0, "ysmael": 604600.0, "delta_pct": 682.1638418079096, "statut": "ECART (>5%)"}, "new_subscribers": {"qs": 54.0, "ysmael": 18611.0, "delta_pct": 343.6481481481482, "statut": "ECART (>5%)"}, "unsubscribers": {"qs": 49.0, "ysmael": 2107.0, "delta_pct": 42.0, "statut": "ECART (>5%)"}}, {"sheet": "Bundle", "date": "2026-08-10", "gateway": "MTN-CIV-Fr", "match": "Present des 2 cotes", "billed_users": {"qs": 1430.0, "ysmael": 1458.0, "delta_pct": 0.01958041958041958, "statut": "OK (<=5%)"}, "revenue_xaf": {"qs": 302548.0, "ysmael": 1439.0, "delta_pct": -0.9952437299205416, "statut": "ECART (>5%)"}, "active_users": {"qs": 2776.0, "ysmael": 144630.0, "delta_pct": 51.10014409221902, "statut": "ECART (>5%)"}, "new_subscribers": {"qs": 198.0, "ysmael": 106296.0, "delta_pct": 535.8484848484849, "statut": "ECART (>5%)"}, "unsubscribers": {"qs": 131.0, "ysmael": 617.0, "delta_pct": 3.709923664122138, "statut": "ECART (>5%)"}}, {"sheet": "Bundle", "date": "2026-08-10", "gateway": "OrangeDigiPay-CIV-Fr", "match": "Present des 2 cotes", "billed_users": {"qs": 544.0, "ysmael": 5100.0, "delta_pct": 8.375, "statut": "ECART (>5%)"}, "revenue_xaf": {"qs": 222967.0, "ysmael": 4998.0, "delta_pct": -0.9775841267990331, "statut": "ECART (>5%)"}, "active_users": {"qs": 801.0, "ysmael": 649100.0, "delta_pct": 809.3620474406991, "statut": "ECART (>5%)"}, "new_subscribers": {"qs": 62.0, "ysmael": 18689.0, "delta_pct": 300.4354838709677, "statut": "ECART (>5%)"}, "unsubscribers": {"qs": 52.0, "ysmael": 2305.0, "delta_pct": 43.32692307692308, "statut": "ECART (>5%)"}}, {"sheet": "Bundle", "date": "2026-08-11", "gateway": "MTN-CIV-Fr", "match": "Present des 2 cotes", "billed_users": {"qs": 1307.0, "ysmael": 1506.0, "delta_pct": 0.152257077276205, "statut": "ECART (>5%)"}, "revenue_xaf": {"qs": 271037.0, "ysmael": 1493.0, "delta_pct": -0.9944915269870903, "statut": "ECART (>5%)"}, "active_users": {"qs": 2706.0, "ysmael": 146960.0, "delta_pct": 53.3089430894309, "statut": "ECART (>5%)"}, "new_subscribers": {"qs": 178.0, "ysmael": 101722.0, "delta_pct": 570.4719101123595, "statut": "ECART (>5%)"}, "unsubscribers": {"qs": 119.0, "ysmael": 656.0, "delta_pct": 4.512605042016807, "statut": "ECART (>5%)"}}, {"sheet": "Bundle", "date": "2026-08-11", "gateway": "OrangeDigiPay-CIV-Fr", "match": "Present des 2 cotes", "billed_users": {"qs": 699.0, "ysmael": 8852.0, "delta_pct": 11.66380543633763, "statut": "ECART (>5%)"}, "revenue_xaf": {"qs": 284772.0, "ysmael": 8765.0, "delta_pct": -0.9692209908277499, "statut": "ECART (>5%)"}, "active_users": {"qs": 844.0, "ysmael": 1282900.0, "delta_pct": 1519.023696682465, "statut": "ECART (>5%)"}, "new_subscribers": {"qs": 137.0, "ysmael": 22297.0, "delta_pct": 161.7518248175182, "statut": "ECART (>5%)"}, "unsubscribers": {"qs": 66.0, "ysmael": 4163.0, "delta_pct": 62.07575757575758, "statut": "ECART (>5%)"}}, {"sheet": "Bundle", "date": "2026-08-12", "gateway": "MTN-CIV-Fr", "match": "Present des 2 cotes", "billed_users": {"qs": 1391.0, "ysmael": 1243.0, "delta_pct": -0.1063982746225737, "statut": "ECART (>5%)"}, "revenue_xaf": {"qs": 287271.0, "ysmael": 1227.0, "delta_pct": -0.995728771786919, "statut": "ECART (>5%)"}, "active_users": {"qs": 2613.0, "ysmael": 122710.0, "delta_pct": 45.96134711060084, "statut": "ECART (>5%)"}, "new_subscribers": {"qs": 152.0, "ysmael": 97013.0, "delta_pct": 637.2434210526316, "statut": "ECART (>5%)"}, "unsubscribers": {"qs": 110.0, "ysmael": 531.0, "delta_pct": 3.827272727272727, "statut": "ECART (>5%)"}}, {"sheet": "Bundle", "date": "2026-08-12", "gateway": "OrangeDigiPay-CIV-Fr", "match": "Present des 2 cotes", "billed_users": {"qs": 679.0, "ysmael": 4167.0, "delta_pct": 5.136966126656849, "statut": "ECART (>5%)"}, "revenue_xaf": {"qs": 276469.0, "ysmael": 4098.0, "delta_pct": -0.985177361657184, "statut": "ECART (>5%)"}, "active_users": {"qs": 979.0, "ysmael": 531200.0, "delta_pct": 541.5944841675179, "statut": "ECART (>5%)"}, "new_subscribers": {"qs": 119.0, "ysmael": 19523.0, "delta_pct": 163.0588235294118, "statut": "ECART (>5%)"}, "unsubscribers": {"qs": 68.0, "ysmael": 1823.0, "delta_pct": 25.80882352941176, "statut": "ECART (>5%)"}}, {"sheet": "Bundle", "date": "2026-08-13", "gateway": "MTN-CIV-Fr", "match": "Present des 2 cotes", "billed_users": {"qs": 1319.0, "ysmael": 1444.0, "delta_pct": 0.09476876421531463, "statut": "ECART (>5%)"}, "revenue_xaf": {"qs": 288815.0, "ysmael": 1425.0, "delta_pct": -0.9950660457386216, "statut": "ECART (>5%)"}, "active_users": {"qs": 2895.0, "ysmael": 143030.0, "delta_pct": 48.40587219343696, "statut": "ECART (>5%)"}, "new_subscribers": {"qs": 178.0, "ysmael": 89961.0, "delta_pct": 504.3988764044944, "statut": "ECART (>5%)"}, "unsubscribers": {"qs": 130.0, "ysmael": 630.0, "delta_pct": 3.846153846153846, "statut": "ECART (>5%)"}}, {"sheet": "Bundle", "date": "2026-08-13", "gateway": "OrangeDigiPay-CIV-Fr", "match": "Present des 2 cotes", "billed_users": {"qs": 491.0, "ysmael": 4416.0, "delta_pct": 7.993890020366599, "statut": "ECART (>5%)"}, "revenue_xaf": {"qs": 197869.0, "ysmael": 4347.0, "delta_pct": -0.9780309194467046, "statut": "ECART (>5%)"}, "active_users": {"qs": 763.0, "ysmael": 562300.0, "delta_pct": 735.959370904325, "statut": "ECART (>5%)"}, "new_subscribers": {"qs": 90.0, "ysmael": 17898.0, "delta_pct": 197.8666666666667, "statut": "ECART (>5%)"}, "unsubscribers": {"qs": 33.0, "ysmael": 1967.0, "delta_pct": 58.60606060606061, "statut": "ECART (>5%)"}}, {"sheet": "Bundle", "date": "2026-08-14", "gateway": "MTN-CIV-Fr", "match": "Present des 2 cotes", "billed_users": {"qs": 1328.0, "ysmael": 1473.0, "delta_pct": 0.1091867469879518, "statut": "ECART (>5%)"}, "revenue_xaf": {"qs": 287936.0, "ysmael": 1450.0, "delta_pct": -0.9949641587019338, "statut": "ECART (>5%)"}, "active_users": {"qs": 2705.0, "ysmael": 145410.0, "delta_pct": 52.75600739371534, "statut": "ECART (>5%)"}, "new_subscribers": {"qs": 169.0, "ysmael": 84203.0, "delta_pct": 497.2426035502959, "statut": "ECART (>5%)"}, "unsubscribers": {"qs": 137.0, "ysmael": 637.0, "delta_pct": 3.64963503649635, "statut": "ECART (>5%)"}}, {"sheet": "Bundle", "date": "2026-08-14", "gateway": "OrangeDigiPay-CIV-Fr", "match": "Present des 2 cotes", "billed_users": {"qs": 522.0, "ysmael": 4976.0, "delta_pct": 8.53256704980843, "statut": "ECART (>5%)"}, "revenue_xaf": {"qs": 210956.0, "ysmael": 4880.0, "delta_pct": -0.9768672140161929, "statut": "ECART (>5%)"}, "active_users": {"qs": 862.0, "ysmael": 638500.0, "delta_pct": 739.7192575406033, "statut": "ECART (>5%)"}, "new_subscribers": {"qs": 88.0, "ysmael": 18541.0, "delta_pct": 209.6931818181818, "statut": "ECART (>5%)"}, "unsubscribers": {"qs": 54.0, "ysmael": 2241.0, "delta_pct": 40.5, "statut": "ECART (>5%)"}}, {"sheet": "Bundle", "date": "2026-08-15", "gateway": "MTN-CIV-Fr", "match": "Present des 2 cotes", "billed_users": {"qs": 1506.0, "ysmael": 1240.0, "delta_pct": -0.1766268260292165, "statut": "ECART (>5%)"}, "revenue_xaf": {"qs": 311760.0, "ysmael": 1220.0, "delta_pct": -0.9960867333846548, "statut": "ECART (>5%)"}, "active_users": {"qs": 2823.0, "ysmael": 123030.0, "delta_pct": 42.58129649309245, "statut": "ECART (>5%)"}, "new_subscribers": {"qs": 237.0, "ysmael": 78570.0, "delta_pct": 330.5189873417722, "statut": "ECART (>5%)"}, "unsubscribers": {"qs": 106.0, "ysmael": 526.0, "delta_pct": 3.962264150943396, "statut": "ECART (>5%)"}}, {"sheet": "Bundle", "date": "2026-08-15", "gateway": "OrangeDigiPay-CIV-Fr", "match": "Present des 2 cotes", "billed_users": {"qs": 652.0, "ysmael": 4649.0, "delta_pct": 6.130368098159509, "statut": "ECART (>5%)"}, "revenue_xaf": {"qs": 259755.0, "ysmael": 4580.0, "delta_pct": -0.9823680006159651, "statut": "ECART (>5%)"}, "active_users": {"qs": 962.0, "ysmael": 594300.0, "delta_pct": 616.7754677754677, "statut": "ECART (>5%)"}, "new_subscribers": {"qs": 98.0, "ysmael": 18424.0, "delta_pct": 187.0, "statut": "ECART (>5%)"}, "unsubscribers": {"qs": 28.0, "ysmael": 2045.0, "delta_pct": 72.03571428571429, "statut": "ECART (>5%)"}}, {"sheet": "Bundle", "date": "2026-08-16", "gateway": "MTN-CIV-Fr", "match": "Present des 2 cotes", "billed_users": {"qs": 1430.0, "ysmael": 1257.0, "delta_pct": -0.120979020979021, "statut": "ECART (>5%)"}, "revenue_xaf": {"qs": 298736.0, "ysmael": 1237.0, "delta_pct": -0.9958592201810295, "statut": "ECART (>5%)"}, "active_users": {"qs": 2741.0, "ysmael": 124600.0, "delta_pct": 44.45786209412623, "statut": "ECART (>5%)"}, "new_subscribers": {"qs": 192.0, "ysmael": 72068.0, "delta_pct": 374.3541666666667, "statut": "ECART (>5%)"}, "unsubscribers": {"qs": 116.0, "ysmael": 556.0, "delta_pct": 3.793103448275862, "statut": "ECART (>5%)"}}, {"sheet": "Bundle", "date": "2026-08-16", "gateway": "OrangeDigiPay-CIV-Fr", "match": "Present des 2 cotes", "billed_users": {"qs": 604.0, "ysmael": 4607.0, "delta_pct": 6.627483443708609, "statut": "ECART (>5%)"}, "revenue_xaf": {"qs": 248616.0, "ysmael": 4501.0, "delta_pct": -0.9818957750104579, "statut": "ECART (>5%)"}, "active_users": {"qs": 799.0, "ysmael": 589900.0, "delta_pct": 737.2978723404256, "statut": "ECART (>5%)"}, "new_subscribers": {"qs": 67.0, "ysmael": 18105.0, "delta_pct": 269.2238805970149, "statut": "ECART (>5%)"}, "unsubscribers": {"qs": 58.0, "ysmael": 2074.0, "delta_pct": 34.75862068965517, "statut": "ECART (>5%)"}}, {"sheet": "Bundle", "date": "2026-08-17", "gateway": "MTN-CIV-Fr", "match": "Present des 2 cotes", "billed_users": {"qs": 1393.0, "ysmael": 1312.0, "delta_pct": -0.05814788226848528, "statut": "ECART (>5%)"}, "revenue_xaf": {"qs": 276799.0, "ysmael": 1292.0, "delta_pct": -0.9953323530793102, "statut": "ECART (>5%)"}, "active_users": {"qs": 2561.0, "ysmael": 129790.0, "delta_pct": 49.6794221007419, "statut": "ECART (>5%)"}, "new_subscribers": {"qs": 141.0, "ysmael": 65257.0, "delta_pct": 461.8156028368794, "statut": "ECART (>5%)"}, "unsubscribers": {"qs": 142.0, "ysmael": 574.0, "delta_pct": 3.042253521126761, "statut": "ECART (>5%)"}}, {"sheet": "Bundle", "date": "2026-08-17", "gateway": "OrangeDigiPay-CIV-Fr", "match": "Present des 2 cotes", "billed_users": {"qs": 606.0, "ysmael": 4818.0, "delta_pct": 6.95049504950495, "statut": "ECART (>5%)"}, "revenue_xaf": {"qs": 244234.0, "ysmael": 4751.0, "delta_pct": -0.9805473439406471, "statut": "ECART (>5%)"}, "active_users": {"qs": 796.0, "ysmael": 609200.0, "delta_pct": 764.3266331658291, "statut": "ECART (>5%)"}, "new_subscribers": {"qs": 103.0, "ysmael": 18285.0, "delta_pct": 176.5242718446602, "statut": "ECART (>5%)"}, "unsubscribers": {"qs": 35.0, "ysmael": 2108.0, "delta_pct": 59.22857142857143, "statut": "ECART (>5%)"}}, {"sheet": "Bundle", "date": "2026-08-18", "gateway": "MTN-CIV-Fr", "match": "Present des 2 cotes", "billed_users": {"qs": 1469.0, "ysmael": 1388.0, "delta_pct": -0.05513955071477195, "statut": "ECART (>5%)"}, "revenue_xaf": {"qs": 299275.0, "ysmael": 1372.0, "delta_pct": -0.995415587670203, "statut": "ECART (>5%)"}, "active_users": {"qs": 2951.0, "ysmael": 136450.0, "delta_pct": 45.23856319891562, "statut": "ECART (>5%)"}, "new_subscribers": {"qs": 236.0, "ysmael": 60049.0, "delta_pct": 253.4449152542373, "statut": "ECART (>5%)"}, "unsubscribers": {"qs": 123.0, "ysmael": 617.0, "delta_pct": 4.016260162601626, "statut": "ECART (>5%)"}}, {"sheet": "Bundle", "date": "2026-08-18", "gateway": "OrangeDigiPay-CIV-Fr", "match": "Present des 2 cotes", "billed_users": {"qs": 640.0, "ysmael": 8623.0, "delta_pct": 12.4734375, "statut": "ECART (>5%)"}, "revenue_xaf": {"qs": 256529.0, "ysmael": 8536.0, "delta_pct": -0.966725009648032, "statut": "ECART (>5%)"}, "active_users": {"qs": 918.0, "ysmael": 1255100.0, "delta_pct": 1366.211328976035, "statut": "ECART (>5%)"}, "new_subscribers": {"qs": 125.0, "ysmael": 21632.0, "delta_pct": 172.056, "statut": "ECART (>5%)"}, "unsubscribers": {"qs": 63.0, "ysmael": 3918.0, "delta_pct": 61.19047619047619, "statut": "ECART (>5%)"}}, {"sheet": "Bundle", "date": "2026-08-19", "gateway": "MTN-CIV-Fr", "match": "Present des 2 cotes", "billed_users": {"qs": 1494.0, "ysmael": 1219.0, "delta_pct": -0.1840696117804552, "statut": "ECART (>5%)"}, "revenue_xaf": {"qs": 311680.0, "ysmael": 1202.0, "delta_pct": -0.9961434804928131, "statut": "ECART (>5%)"}, "active_users": {"qs": 2794.0, "ysmael": 120310.0, "delta_pct": 42.06012884753042, "statut": "ECART (>5%)"}, "new_subscribers": {"qs": 278.0, "ysmael": 54519.0, "delta_pct": 195.1115107913669, "statut": "ECART (>5%)"}, "unsubscribers": {"qs": 116.0, "ysmael": 521.0, "delta_pct": 3.491379310344827, "statut": "ECART (>5%)"}}, {"sheet": "Bundle", "date": "2026-08-19", "gateway": "OrangeDigiPay-CIV-Fr", "match": "Present des 2 cotes", "billed_users": {"qs": 753.0, "ysmael": 4180.0, "delta_pct": 4.551128818061089, "statut": "ECART (>5%)"}, "revenue_xaf": {"qs": 311446.0, "ysmael": 4128.0, "delta_pct": -0.9867456958830745, "statut": "ECART (>5%)"}, "active_users": {"qs": 916.0, "ysmael": 534800.0, "delta_pct": 582.8427947598253, "statut": "ECART (>5%)"}, "new_subscribers": {"qs": 81.0, "ysmael": 18911.0, "delta_pct": 232.4691358024691, "statut": "ECART (>5%)"}, "unsubscribers": {"qs": 71.0, "ysmael": 1892.0, "delta_pct": 25.64788732394366, "statut": "ECART (>5%)"}}], "concordance": [{"metric": "billed_users", "Organic": 0.0, "Bundle": 10.5}, {"metric": "revenue_xaf", "Organic": 0.0, "Bundle": 0.0}, {"metric": "active_users", "Organic": 0.0, "Bundle": 0.0}, {"metric": "new_subscribers", "Organic": 0.0, "Bundle": 0.0}, {"metric": "unsubscribers", "Organic": 0.0, "Bundle": 0.0}], "kpis": {"concordance_billed_users_organic": 0.0, "concordance_revenue_organic": 0.0, "n_unmatched_channels": 47, "coverage_organic_pct": 18.4, "coverage_bundle_pct": 50.9}, "unmatched_channels": [{"perimetre": "Organic", "cote": "QS uniquement", "channel_norm": "ariel sheney"}, {"perimetre": "Organic", "cote": "QS uniquement", "channel_norm": "ayanne"}, {"perimetre": "Organic", "cote": "QS uniquement", "channel_norm": "bblack - orange"}, {"perimetre": "Organic", "cote": "QS uniquement", "channel_norm": "bebi philip"}, {"perimetre": "Organic", "cote": "QS uniquement", "channel_norm": "cordon bleu"}, {"perimetre": "Organic", "cote": "QS uniquement", "channel_norm": "dre-a"}, {"perimetre": "Organic", "cote": "QS uniquement", "channel_norm": "eden"}, {"perimetre": "Organic", "cote": "QS uniquement", "channel_norm": "fally ipupa"}, {"perimetre": "Organic", "cote": "QS uniquement", "channel_norm": "flash i-tech"}, {"perimetre": "Organic", "cote": "QS uniquement", "channel_norm": "france 24"}, {"perimetre": "Organic", "cote": "QS uniquement", "channel_norm": "gondwana city"}, {"perimetre": "Organic", "cote": "QS uniquement", "channel_norm": "gondwana city semaine"}, {"perimetre": "Organic", "cote": "QS uniquement", "channel_norm": "humour-orange"}, {"perimetre": "Organic", "cote": "QS uniquement", "channel_norm": "innoss b"}, {"perimetre": "Organic", "cote": "QS uniquement", "channel_norm": "jr la melo"}, {"perimetre": "Organic", "cote": "QS uniquement", "channel_norm": "la belle famille"}, {"perimetre": "Organic", "cote": "QS uniquement", "channel_norm": "la belle famille monthly"}, {"perimetre": "Organic", "cote": "QS uniquement", "channel_norm": "mike alabi"}, {"perimetre": "Organic", "cote": "QS uniquement", "channel_norm": "mtn events"}, {"perimetre": "Organic", "cote": "QS uniquement", "channel_norm": "my cartoon"}, {"perimetre": "Organic", "cote": "QS uniquement", "channel_norm": "nollywood"}, {"perimetre": "Organic", "cote": "QS uniquement", "channel_norm": "revolution"}, {"perimetre": "Organic", "cote": "QS uniquement", "channel_norm": "serge beynaud"}, {"perimetre": "Organic", "cote": "QS uniquement", "channel_norm": "shanl"}, {"perimetre": "Organic", "cote": "QS uniquement", "channel_norm": "singuila"}, {"perimetre": "Organic", "cote": "QS uniquement", "channel_norm": "soum bill"}, {"perimetre": "Organic", "cote": "QS uniquement", "channel_norm": "suspect 95"}, {"perimetre": "Organic", "cote": "QS uniquement", "channel_norm": "uma inside"}, {"perimetre": "Organic", "cote": "QS uniquement", "channel_norm": "v.d.a"}, {"perimetre": "Organic", "cote": "QS uniquement", "channel_norm": "video flash foot"}, {"perimetre": "Organic", "cote": "QS uniquement", "channel_norm": "video flash foot daily"}, {"perimetre": "Organic", "cote": "QS uniquement", "channel_norm": "vie religieuse"}, {"perimetre": "Organic", "cote": "QS uniquement", "channel_norm": "vie religieuse obsolete"}, {"perimetre": "Organic", "cote": "QS uniquement", "channel_norm": "yode & siro"}, {"perimetre": "Organic", "cote": "QS uniquement", "channel_norm": "zota"}, {"perimetre": "Organic", "cote": "Ysmael uniquement", "channel_norm": "7info orange jour"}, {"perimetre": "Organic", "cote": "Ysmael uniquement", "channel_norm": "7info orange semaine"}, {"perimetre": "Organic", "cote": "Ysmael uniquement", "channel_norm": "cuisine orange semaine"}, {"perimetre": "Organic", "cote": "Ysmael uniquement", "channel_norm": "flash foot video jour"}, {"perimetre": "Organic", "cote": "Ysmael uniquement", "channel_norm": "life tv jour"}, {"perimetre": "Organic", "cote": "Ysmael uniquement", "channel_norm": "life tv semaine"}, {"perimetre": "Organic", "cote": "Ysmael uniquement", "channel_norm": "mc one jour"}, {"perimetre": "Bundle", "cote": "QS uniquement", "channel_norm": "carles antonio combo data"}, {"perimetre": "Bundle", "cote": "QS uniquement", "channel_norm": "flash fally combo data"}, {"perimetre": "Bundle", "cote": "QS uniquement", "channel_norm": "flash foot semaine combo data"}, {"perimetre": "Bundle", "cote": "QS uniquement", "channel_norm": "nollywood combo data"}, {"perimetre": "Bundle", "cote": "QS uniquement", "channel_norm": "vie religieuse 1jr combo data"}], "anomalies": [{"anomalie": "Lignes 100% vides en fin de feuille", "localisation": "Ysmael / mtd Aout 2026 organic (10 406 lignes), mtd Aout 2026 bundle (7 008 lignes)", "impact": "Pollue la plage utilisee du classeur ; sans filtre dropna, gonfle artificiellement le nombre de lignes et de valeurs manquantes."}, {"anomalie": "revenue_xaf quasi identique a billed_users", "localisation": "Ysmael / mtd Aout 2026 organic (184/192 lignes, 96%), mtd Aout 2026 bundle (40/116 lignes, 34%)", "impact": "Suggere une formule/collage errone plutot qu'un vrai calcul de revenu ; a verifier avant d'utiliser revenue_xaf de ces feuilles."}, {"anomalie": "Ratio active_users / billed_users ~100-300x plus eleve cote Ysmael", "localisation": "Ysmael / mtd Aout 2026 organic et bundle, compare a QuickSight / Organic et Bundle (ratio ~1.8x)", "impact": "Indique une unite ou une definition de active_users differente entre les deux plateformes ; explique probablement une bonne partie des ecarts sur cette metrique dans les feuilles Synthese."}], "metrics": ["billed_users", "revenue_xaf", "active_users", "new_subscribers", "unsubscribers"]};
+
+const METRIC_LABELS = {
+  billed_users: "Billed users",
+  revenue_xaf: "Revenue (XAF)",
+  active_users: "Active users",
+  new_subscribers: "New subscribers",
+  unsubscribers: "Unsubscribers",
+};
+const GW_LABELS = { "MTN-CIV-Fr":"MTN", "OrangeDigiPay-CIV-Fr":"Orange" };
+
+const state = { sheet:"Tous", gateway:"Tous", metric:"billed_users" };
+
+const fmt = (n) => {
+  if (n === null || n === undefined || Number.isNaN(n)) return "—";
+  return new Intl.NumberFormat("fr-FR", { maximumFractionDigits: 0 }).format(n);
+};
+const fmtPct = (p) => {
+  if (p === null || p === undefined || !Number.isFinite(p)) return "—";
+  const s = (p*100);
+  return (s>0?"+":"") + s.toFixed(1) + "%";
+};
+
+/* ---------- metric select ---------- */
+const metricSel = document.getElementById("metricSel");
+DATA.metrics.forEach(m => {
+  const opt = document.createElement("option");
+  opt.value = m; opt.textContent = METRIC_LABELS[m] || m;
+  metricSel.appendChild(opt);
+});
+metricSel.value = state.metric;
+metricSel.addEventListener("change", () => { state.metric = metricSel.value; renderAll(); });
+
+/* ---------- segmented controls ---------- */
+function wireSeg(id, key){
+  const seg = document.getElementById(id);
+  seg.querySelectorAll("button").forEach(btn => {
+    btn.addEventListener("click", () => {
+      seg.querySelectorAll("button").forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      state[key] = btn.dataset.val;
+      renderAll();
+    });
+  });
+}
+wireSeg("sheetSeg", "sheet");
+wireSeg("gwSeg", "gateway");
+
+/* ---------- KPIs (static) ---------- */
+function renderKPIs(){
+  const k = DATA.kpis;
+  const items = [
+    { label:"Concordance billed_users (Organic, ±5%)", value: k.concordance_billed_users_organic + "%", cls: k.concordance_billed_users_organic>=80?"good":"critical" },
+    { label:"Concordance revenue_xaf (Organic, ±5%)", value: k.concordance_revenue_organic + "%", cls: k.concordance_revenue_organic>=80?"good":"critical" },
+    { label:"Couverture Ysmael vs QS (lignes, Organic)", value: k.coverage_organic_pct + "%", cls: k.coverage_organic_pct>=80?"good":"critical" },
+    { label:"Canaux non appariés (Organic + Bundle)", value: String(k.n_unmatched_channels), cls: k.n_unmatched_channels>0?"critical":"good" },
+  ];
+  document.getElementById("kpiGrid").innerHTML = items.map(it => `
+    <div class="kpi">
+      <p class="kpi-label">${it.label}</p>
+      <div class="kpi-value ${it.cls}">${it.value}</div>
+    </div>`).join("");
+}
+
+/* ---------- filtering + aggregation ---------- */
+function filteredRows(){
+  return DATA.rows.filter(r =>
+    (state.sheet==="Tous" || r.sheet===state.sheet) &&
+    (state.gateway==="Tous" || r.gateway===state.gateway)
+  );
+}
+
+function aggregateByDate(rows, metric){
+  const map = new Map();
+  rows.forEach(r => {
+    const m = r[metric];
+    if (!map.has(r.date)) map.set(r.date, { date:r.date, qs:0, ysmael:0 });
+    const e = map.get(r.date);
+    e.qs += (m.qs||0); e.ysmael += (m.ysmael||0);
+  });
+  return Array.from(map.values()).sort((a,b) => a.date.localeCompare(b.date));
+}
+
+/* ---------- trend line chart ---------- */
+function renderTrendChart(){
+  const metric = state.metric;
+  document.getElementById("trendTitle").textContent = METRIC_LABELS[metric] + " par jour";
+  const rows = filteredRows();
+  const series = aggregateByDate(rows, metric);
+  const svg = document.getElementById("trendChart");
+  const tooltip = document.getElementById("trendTooltip");
+  svg.innerHTML = "";
+  if (series.length === 0){ return; }
+
+  const W = 640, H = 300, PAD_L = 56, PAD_R = 14, PAD_T = 14, PAD_B = 30;
+  const plotW = W - PAD_L - PAD_R, plotH = H - PAD_T - PAD_B;
+  const maxV = Math.max(1, ...series.map(d => Math.max(d.qs, d.ysmael))) * 1.12;
+  const x = i => PAD_L + (series.length===1 ? plotW/2 : (i/(series.length-1))*plotW);
+  const y = v => PAD_T + plotH - (v/maxV)*plotH;
+
+  const ns = "http://www.w3.org/2000/svg";
+  const g = (tag, attrs) => { const el = document.createElementNS(ns, tag); Object.entries(attrs).forEach(([k,v])=>el.setAttribute(k,v)); return el; };
+
+  // gridlines + y labels
+  const ticks = 4;
+  for (let i=0;i<=ticks;i++){
+    const v = maxV * i/ticks;
+    const yy = y(v);
+    svg.appendChild(g("line", { class:"gridline", x1:PAD_L, x2:W-PAD_R, y1:yy, y2:yy }));
+    const t = g("text", { class:"axislabel", x:PAD_L-8, y:yy+3, "text-anchor":"end" });
+    t.textContent = fmt(v);
+    svg.appendChild(t);
+  }
+  // x labels (sparse)
+  const step = Math.ceil(series.length / 8);
+  series.forEach((d,i) => {
+    if (i % step !== 0 && i !== series.length-1) return;
+    const t = g("text", { class:"axislabel", x:x(i), y:H-8, "text-anchor":"middle" });
+    t.textContent = d.date.slice(5);
+    svg.appendChild(t);
+  });
+
+  function path(key, color){
+    const d = series.map((pt,i) => `${i===0?"M":"L"} ${x(i).toFixed(1)} ${y(pt[key]).toFixed(1)}`).join(" ");
+    svg.appendChild(g("path", { d, fill:"none", stroke:color, "stroke-width":2, "stroke-linecap":"round", "stroke-linejoin":"round" }));
+    // endpoint dot
+    const last = series.length-1;
+    svg.appendChild(g("circle", { cx:x(last), cy:y(series[last][key]), r:3.5, fill:color, stroke:"var(--surface-raised)", "stroke-width":1.5 }));
+  }
+  path("qs", "var(--qs)");
+  path("ysmael", "var(--ysmael)");
+
+  // crosshair + hover
+  const crosshair = g("line", { class:"crosshair", x1:0, x2:0, y1:PAD_T, y2:H-PAD_B });
+  svg.appendChild(crosshair);
+  const dotQs = g("circle", { class:"hoverdot", r:4.5, fill:"var(--qs)", stroke:"var(--surface-raised)", "stroke-width":1.5 });
+  const dotYs = g("circle", { class:"hoverdot", r:4.5, fill:"var(--ysmael)", stroke:"var(--surface-raised)", "stroke-width":1.5 });
+  svg.appendChild(dotQs); svg.appendChild(dotYs);
+
+  const hit = g("rect", { class:"hitband", x:PAD_L, y:PAD_T, width:plotW, height:plotH });
+  svg.appendChild(hit);
+
+  hit.addEventListener("mousemove", (ev) => {
+    const rect = svg.getBoundingClientRect();
+    const scale = W / rect.width;
+    const mx = (ev.clientX - rect.left) * scale;
+    let idx = series.length===1 ? 0 : Math.round(((mx-PAD_L)/plotW)*(series.length-1));
+    idx = Math.max(0, Math.min(series.length-1, idx));
+    const pt = series[idx];
+    crosshair.setAttribute("x1", x(idx)); crosshair.setAttribute("x2", x(idx)); crosshair.style.opacity = 1;
+    dotQs.setAttribute("cx", x(idx)); dotQs.setAttribute("cy", y(pt.qs)); dotQs.style.opacity = 1;
+    dotYs.setAttribute("cx", x(idx)); dotYs.setAttribute("cy", y(pt.ysmael)); dotYs.style.opacity = 1;
+
+    const svgRect = svg.getBoundingClientRect();
+    const px = svgRect.left + (x(idx)/W)*svgRect.width;
+    const py = svgRect.top + (y(Math.max(pt.qs,pt.ysmael))/H)*svgRect.height;
+    const wrapRect = svg.parentElement.getBoundingClientRect();
+    tooltip.style.left = (px - wrapRect.left + 12) + "px";
+    tooltip.style.top = (py - wrapRect.top - 10) + "px";
+    tooltip.innerHTML = `
+      <div class="t-date">${pt.date}</div>
+      <div class="t-row"><span class="t-name"><span class="t-dot" style="background:var(--qs)"></span>QuickSight</span><span class="t-val">${fmt(pt.qs)}</span></div>
+      <div class="t-row"><span class="t-name"><span class="t-dot" style="background:var(--ysmael)"></span>Ysmael</span><span class="t-val">${fmt(pt.ysmael)}</span></div>
+    `;
+    tooltip.style.opacity = 1;
+  });
+  hit.addEventListener("mouseleave", () => { crosshair.style.opacity = 0; dotQs.style.opacity = 0; dotYs.style.opacity = 0; tooltip.style.opacity = 0; });
+}
+
+/* ---------- concordance bar chart (static, unaffected by filters) ---------- */
+function renderBarChart(){
+  const svg = document.getElementById("barChart");
+  const tooltip = document.getElementById("barTooltip");
+  svg.innerHTML = "";
+  const data = DATA.concordance; // [{metric, Organic, Bundle}]
+  const W = 420, H = 300, PAD_L = 34, PAD_R = 10, PAD_T = 14, PAD_B = 54;
+  const plotW = W - PAD_L - PAD_R, plotH = H - PAD_T - PAD_B;
+  const groupW = plotW / data.length;
+  const barW = groupW * 0.30;
+  const maxV = 100;
+  const y = v => PAD_T + plotH - (v/maxV)*plotH;
+
+  const ns = "http://www.w3.org/2000/svg";
+  const g = (tag, attrs) => { const el = document.createElementNS(ns, tag); Object.entries(attrs).forEach(([k,v])=>el.setAttribute(k,v)); return el; };
+
+  [0,25,50,75,100].forEach(v => {
+    const yy = y(v);
+    svg.appendChild(g("line", { class:"gridline", x1:PAD_L, x2:W-PAD_R, y1:yy, y2:yy }));
+    const t = g("text", { class:"axislabel", x:PAD_L-6, y:yy+3, "text-anchor":"end" });
+    t.textContent = v + "%"; svg.appendChild(t);
+  });
+
+  data.forEach((d,i) => {
+    const cx = PAD_L + groupW*i + groupW/2;
+    const bars = [ ["Organic","var(--organic)"], ["Bundle","var(--bundle)"] ];
+    bars.forEach(([key,color], j) => {
+      const v = d[key];
+      const bx = cx - barW - 3 + j*(barW+6);
+      const by = y(v);
+      const rect = g("rect", { x:bx, y:by, width:barW, height:(PAD_T+plotH-by), rx:3, fill:color });
+      svg.appendChild(rect);
+      const lbl = g("text", { class:"barlabel", x:bx+barW/2, y:by-5, "text-anchor":"middle" });
+      lbl.textContent = v + "%"; svg.appendChild(lbl);
+      rect.addEventListener("mousemove", (ev) => {
+        const wrapRect = svg.parentElement.getBoundingClientRect();
+        tooltip.style.left = (bx/W)*wrapRect.width + 10 + "px";
+        tooltip.style.top = (by/H)*wrapRect.height - 6 + "px";
+        tooltip.innerHTML = `<div class="t-date">${METRIC_LABELS[d.metric]||d.metric}</div><div class="t-row"><span class="t-name"><span class="t-dot" style="background:${color}"></span>${key}</span><span class="t-val">${v}%</span></div>`;
+        tooltip.style.opacity = 1;
+      });
+      rect.addEventListener("mouseleave", () => tooltip.style.opacity = 0);
+    });
+    const lab = g("text", { class:"catlabel", x:cx, y:H-PAD_B+16, "text-anchor":"middle" });
+    const short = (METRIC_LABELS[d.metric]||d.metric).replace(" users","").replace(" (XAF)","");
+    lab.textContent = short;
+    svg.appendChild(lab);
+  });
+}
+
+/* ---------- detail table ---------- */
+function renderTable(){
+  const metric = state.metric;
+  document.getElementById("tableTitle").textContent = "Détail par date & gateway — " + METRIC_LABELS[metric];
+  const rows = filteredRows().slice().sort((a,b) => a.date.localeCompare(b.date) || a.sheet.localeCompare(b.sheet));
+  document.getElementById("tableSub").textContent = rows.length + " lignes (feuille: " + state.sheet + ", gateway: " + state.gateway + ")";
+  const tbody = document.querySelector("#detailTable tbody");
+  tbody.innerHTML = rows.map(r => {
+    const m = r[metric];
+    const isOk = m.statut === "OK (<=5%)";
+    return `<tr>
+      <td>${r.date}</td>
+      <td>${r.sheet}</td>
+      <td>${GW_LABELS[r.gateway]||r.gateway}</td>
+      <td class="num">${fmt(m.qs)}</td>
+      <td class="num">${fmt(m.ysmael)}</td>
+      <td class="num">${fmtPct(m.delta_pct)}</td>
+      <td><span class="pill ${isOk?"ok":"ecart"}"><span class="pill-dot"></span>${isOk?"OK":"Écart"}</span></td>
+    </tr>`;
+  }).join("");
+}
+
+/* ---------- unmatched channels (static list, sheet-filter aware) ---------- */
+function renderUnmatched(){
+  const scope = state.sheet === "Tous" ? ["Organic","Bundle"] : [state.sheet];
+  const rows = DATA.unmatched_channels.filter(r => scope.includes(r.perimetre));
+  const qsOnly = rows.filter(r => r.cote === "QS uniquement");
+  const ysOnly = rows.filter(r => r.cote === "Ysmael uniquement");
+  const li = (r) => `<li>${r.channel_norm}<span class="um-sheet-tag">${r.perimetre}</span></li>`;
+  document.getElementById("unmatchedGrid").innerHTML = `
+    <div class="um-col">
+      <h3><span class="legend-swatch" style="background:var(--qs);display:inline-block;width:10px;height:10px;border-radius:3px"></span>QS uniquement (${qsOnly.length})</h3>
+      <ul class="um-list">${qsOnly.map(li).join("") || "<li>Aucun</li>"}</ul>
+    </div>
+    <div class="um-col">
+      <h3><span class="legend-swatch" style="background:var(--ysmael);display:inline-block;width:10px;height:10px;border-radius:3px"></span>Ysmael uniquement (${ysOnly.length})</h3>
+      <ul class="um-list">${ysOnly.map(li).join("") || "<li>Aucun</li>"}</ul>
+    </div>`;
+}
+
+/* ---------- anomalies (static) ---------- */
+function renderAnomalies(){
+  document.getElementById("anomGrid").innerHTML = DATA.anomalies.map(a => `
+    <div class="anom-card">
+      <h4>${a.anomalie}</h4>
+      <div class="loc">${a.localisation}</div>
+      <p>${a.impact}</p>
+    </div>`).join("");
+}
+
+function renderAll(){
+  renderTrendChart();
+  renderTable();
+  renderUnmatched();
+}
+
+renderKPIs();
+renderBarChart();
+renderAnomalies();
+renderAll();
+window.addEventListener("resize", renderAll);
+</script>
